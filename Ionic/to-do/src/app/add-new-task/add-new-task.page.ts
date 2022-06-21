@@ -42,7 +42,8 @@ export class AddNewTaskPage implements OnInit {
     const uid = this.taskName + this.taskDate;
 
     if(uid){
-    await this.todoService.addTask(uid, this.taskObject);
+      // console.log('Add item');
+    this.todoService.addTask(uid, this.taskObject);
     }
     else{
     console.log('Can\'t save empty data');
