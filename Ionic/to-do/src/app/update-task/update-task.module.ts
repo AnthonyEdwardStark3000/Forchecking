@@ -17,4 +17,6 @@ import { UpdateTaskPage } from './update-task.page';
   ],
   declarations: [UpdateTaskPage]
 })
-export class UpdateTaskPageModule {}
+export class UpdateTaskPageModule {
+
+}
