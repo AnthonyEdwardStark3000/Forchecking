@@ -43,11 +43,16 @@ today: number = Date.now();
     console.log(this.todoList);
   }
 
-  async update(selectedtask){
+  async update(selectedtask: any){
     const modal = await this.modalCtrl.create({
       component: UpdateTaskPage,
       componentProps: {task: selectedtask}
     });
+
+    modal.onDidDismiss().then(()=>{
+      this.getAllTask();
+    });
+
     console.log(selectedtask);
     return await modal.present();
   }

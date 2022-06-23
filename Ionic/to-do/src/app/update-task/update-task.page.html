@@ -2,7 +2,7 @@
   <ion-toolbar >
     <ion-title>Update the task</ion-title>
     <ion-icon name="close" slot="end" size="larger" class="ion-padding"
-    (click)="dismis()"
+    (click)="dismiss()"
     ></ion-icon>
   </ion-toolbar>
 
@@ -28,7 +28,7 @@
    <ion-item>
      <ion-icon name="calendar-outline"slot="start"></ion-icon>
      <ion-label >Due Date </ion-label>
-     <ion-datetime [(ngModel)]="itemDueDate"  displayFormat="D MMM YYYY H:mm"></ion-datetime>
+     <ion-datetime [(ngModel)]="itemDueDate" displayFormat="D MMM YYYY H:mm"></ion-datetime>
    </ion-item>
 
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { TodoServiceService } from './../todo-service.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class AddNewTaskPage implements OnInit {
 
   taskObject;
 
-  constructor(public modalCtrl: ModalController, public todoService: TodoServiceService) { }
+  constructor(public modalCtrl: ModalController, public todoService: TodoServiceService, private toastCtrl: ToastController) { }
 
   ngOnInit() {
   }
@@ -36,19 +36,24 @@ export class AddNewTaskPage implements OnInit {
     this.taskObject = ({
       itemName: this.taskName,
       dueDate: this.taskDate ===undefined? Date.now():this.taskDate,
-      priority: this.taskPriority,
+      priority: this.taskPriority === undefined? 'medium': this.taskPriority,
       itemCategory: this.taskCategory,
     });
     const uid = this.taskName + this.taskDate;
 
     if(uid){
       // console.log('Add item');
-    this.todoService.addTask(uid, this.taskObject);
+    await this.todoService.addTask(uid, this.taskObject);
     }
     else{
     console.log('Can\'t save empty data');
     }
     this.dismiss();
+    this.toastCtrl.create({
+      message: 'Task Created Successfully ! ',
+      duration: 1000,
+      animated: false,
+    }).then(res=> res.present());
   }
 
 }
