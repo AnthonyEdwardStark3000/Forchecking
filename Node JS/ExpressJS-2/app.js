@@ -1,8 +1,13 @@
 // const http = require('http');
 
 const express = require('express');
+const expressHbs = require('express-handlebars');
 const app = express();
-app.set('view engine', 'pug');
+
+app.engine('handlebars',expressHbs());
+app.set('view engine', 'handlebars');
+
+// app.set('view engine', 'pug');
 const path = require('path');
 
 
@@ -24,7 +29,8 @@ app.use(shopRoute);
 // });
 
 app.use(function(req, res, next){
-    res.status(400).sendFile(path.join(rootFolder, './', 'views', '404.html'));
+    // res.status(400).sendFile(path.join(rootFolder, './', 'views', '404.html'));
+    res.status(400).render('404',{content:'Page Not Found !', pageTitle:'Page Not Found !'});
 });
 
 app.listen(3000,function(){

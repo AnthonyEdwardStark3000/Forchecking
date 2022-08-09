@@ -8,7 +8,8 @@ const  products = [];
 
 router.get('/add-product',function(req, res, next){
     console.log("In middleware");
-    res.status(200).sendFile(path.join(rootFolder, 'views', 'add-product.html'));
+    // res.status(200).sendFile(path.join(rootFolder, 'views', 'add-product.html'));
+    res.status(200).render('add-product' ,{pageTitle: "Add Product", path: "/admin/add-product"});
 });
 
 router.post('/add-product',function(req, res, next){
