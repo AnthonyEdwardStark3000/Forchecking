@@ -1,11 +1,12 @@
 // const http = require('http');
 
 const express = require('express');
-const expressHbs = require('express-handlebars');
+// const expressHbs = require('express-handlebars');
 const app = express();
 
-app.engine('handlebars',expressHbs());
-app.set('view engine', 'handlebars');
+// app.engine('handlebars',expressHbs({layoutsDir: 'views/layouts/', defaultLayout: 'main-layout'}));
+// app.set('view engine', 'handlebars');
+app.set('view engine', 'ejs');
 
 // app.set('view engine', 'pug');
 const path = require('path');

@@ -10,7 +10,7 @@ router.get('/',function(req, res, next){
     console.log("Base Page");
     // res.status(200).sendFile(path.join(rootFolder,'views','shop.html'));
     const products = adminData.products;
-    res.status(200).render('shop',{prod: products, docTitle: 'My Shop', path:'/', pageTitle:'Shop', hasProducts: products.length>0 ?true : false});
+    res.status(200).render('shop',{prod: products, docTitle: 'My Shop', path:'/', pageTitle:'Shop', hasProducts: products.length>0 ?true : false , activeShop: true, productCSS:true});
 });
 
 module.exports = router;
