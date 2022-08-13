@@ -12,15 +12,16 @@ app.set('view engine', 'ejs');
 const path = require('path');
 
 
-const adminData = require('./routes/admin.js');
+const adminRoute = require('./routes/admin.js');
 const shopRoute = require('./routes/shop.js');
-const rootFolder = require('./util/path');
+// const rootFolder = require('./util/path');
 
 const bodyParser = require('body-parser');
+const NoPage = require('./controllers/pageRedirect.Controller.js');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname , 'public')));
 
-app.use('/admin',adminData.routes);
+app.use('/admin',adminRoute);
 app.use(shopRoute);
 
 
@@ -29,10 +30,7 @@ app.use(shopRoute);
 //     console.log("Server started at port 30001");
 // });
 
-app.use(function(req, res, next){
-    // res.status(400).sendFile(path.join(rootFolder, './', 'views', '404.html'));
-    res.status(400).render('404',{content:'Page Not Found !', pageTitle:'Page Not Found !'});
-});
+app.use(NoPage.PageNotFound);
 
 app.listen(3000,function(){
     console.log("Server started at port 3000");
