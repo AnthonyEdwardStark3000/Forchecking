@@ -8,16 +8,19 @@ exports.getAddProduct =  function(req, res, next){
 
 exports.postAddProduct = function(req, res, next){
     console.log(req.body);
-    const product = new Product(req.body.title);
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const price = req.body.price;
+    const description = req.body.description;
+
+    const product = new Product(title, imageUrl, description, price);
     product.save();
     res.status(200).redirect('/');
 }
 
 exports.getProducts = function(req, res, next){
-    // console.log(__dirname+" "+adminData.products);
-    console.log("Base Page");
-    Product.fetchAll((products)=>{
-        res.status(200).render('shop/product-list',{prod: products, docTitle: 'My Shop', path:'/', pageTitle:'Shop', hasProducts: products.length>0 ?true : false , activeShop: true, productCSS:true});
-    });
-    // res.status(200).sendFile(path.join(rootFolder,'views','shop.html'));
-};
+     console.log("Base Page");
+     Product.fetchAll((products)=>{
+         res.status(200).render('admin/products',{prod: products, docTitle: 'My Shop', path:'/admin/products', pageTitle:'Admin Products'});
+     });
+}
