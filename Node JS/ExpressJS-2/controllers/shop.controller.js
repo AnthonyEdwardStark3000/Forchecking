@@ -10,6 +10,16 @@ exports.getProducts = function(req, res, next){
     // res.status(200).sendFile(path.join(rootFolder,'views','shop.html'));
 };
 
+exports.getProduct = function(req, res, next){
+    console.log("Base Page");
+    const prodId = req.params.productId;
+    // console.log(prodId);
+    Product.findById(prodId, product =>{
+        console.log(product);
+    });
+    res.redirect('/');
+};
+
 exports.getIndex = (req, res, next) =>{
     console.log("Base Page");
     Product.fetchAll((products)=>{
