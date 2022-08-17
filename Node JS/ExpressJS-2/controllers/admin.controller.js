@@ -3,7 +3,7 @@ const Product = require("../models/product");
 exports.getAddProduct =  function(req, res, next){
     console.log("In middleware");
     // res.status(200).sendFile(path.join(rootFolder, 'views', 'add-product.html'));
-    res.status(200).render('admin/add-product' ,{pageTitle: "Add Product", path: "/admin/add-product",productCSS: true, activeAddProduct: true});
+    res.status(200).render('admin/edit-product' ,{pageTitle: "Add Product", path: "/admin/add-product",productCSS: true, activeAddProduct: true});
 }
 
 exports.postAddProduct = function(req, res, next){
@@ -17,6 +17,18 @@ exports.postAddProduct = function(req, res, next){
     product.save();
     res.status(200).redirect('/');
 }
+
+exports.getEditProduct =  function(req, res, next){
+    console.log("In middleware");
+    const editMode = req.query.edit;
+    if(!editMode)
+    {
+        return res.redirect('/');
+    }
+    // res.status(200).sendFile(path.join(rootFolder, 'views', 'add-product.html'));
+    res.status(200).render('admin/edit-product' ,{pageTitle: "Add Product", path: "/admin/edit-product",productCSS: true, activeAddProduct: true, editing: editMode});
+}
+
 
 exports.getProducts = function(req, res, next){
      console.log("Base Page");

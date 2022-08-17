@@ -131,3 +131,7 @@ main {
     color: red;
     font-weight: bolder;
 }
+
+.centered{
+  text-align: center;
+}
