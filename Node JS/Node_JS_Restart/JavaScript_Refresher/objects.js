@@ -27,3 +27,12 @@ console.log('Altering the copied array');
 copiedArray.push('100');
 console.log('[  Copied array :'+copiedArray);
 console.log('Original array :'+hobbies+"    ]");
+
+const copiedPerson = {...person};
+console.log('Copying Object....'+copiedPerson.name);
+
+//Rest operator
+const RestExample = function(...args){
+    return args;
+}
+console.log(RestExample(1,2,3,4,5));
