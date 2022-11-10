@@ -36,3 +36,17 @@ const RestExample = function(...args){
     return args;
 }
 console.log(RestExample(1,2,3,4,5));
+
+//Object Destructuring
+const printMyName = ({name})=>{
+    console.log('Grabbing the name from the object:'+name);
+}
+console.log('Object Destructuring....');
+printMyName(person);
+
+const {name} = person;
+console.log(name);
+
+//Array Destructuring
+const [hobby1, hobby2] = hobbies;
+console.log('My Hobbies include :'+hobby1,hobby2);
