@@ -35,6 +35,7 @@ const requestHandler = (req, res)=>{
     res.write(`<h1 style="text-align:'center'">Hello By Node JS !</h1>`);
     res.end();
 };
+// module.exports = requestHandler;
 // module.exports = {message:'Started the server at port 3000',handler:requestHandler};
 module.exports.message = 'Server Started at the port 3000';
 module.exports.handler = requestHandler;
