@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-const requestHandler = (req, res)=>{   
-    const url =req.url;
-    const method =req.method;
-    if(url==='/'){
+const requestHandler = (req, res) => {
+    const url = req.url;
+    const method = req.method;
+    if (url === '/') {
         res.write('<html>');
         res.write('<head><title>Welcome</title>');
         res.write('</head>');
@@ -13,25 +13,26 @@ const requestHandler = (req, res)=>{
         res.write('</html>');
         return res.end();
     }
-    if(url==='/message' && method ==='POST'){
+    if (url === '/message' && method === 'POST') {
         const body = [];
-        req.on('data',(chunk)=>{body.push(chunk)});
-        return req.on('end',()=>{
+        req.on('data', (chunk) => { body.push(chunk) });
+        return req.on('end', () => {
             const bufferedString = Buffer.concat(body).toString();
-            const message = bufferedString.split('=')[1];
+            const message = bufferedString.split('=')[1].replaceAll('+', ' ');
+            debugger;
             console.log(bufferedString);
-            fs.writeFile('message.txt',message,err=>{
-            console.log('Console logging the error :',err);
-            res.statusCode = 302;
-            console.log(body);
-            res.setHeader('Location','/');        
-            return res.end();
+            fs.writeFile('message.txt', message, err => {
+                console.log('Console logging the error :', err);
+                res.statusCode = 302;
+                console.log(body);
+                res.setHeader('Location', '/');
+                return res.end();
+            });
         });
-        });
-        
+
     }
     // process.exit();
-    res.setHeader('Content-Type','text/html');
+    res.setHeader('Content-Type', 'text/html');
     res.write(`<h1 style="text-align:'center'">Hello By Node JS !</h1>`);
     res.end();
 };
