@@ -1,8 +1,12 @@
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 
+// my import
+const rootDir = require('../util/path');
+
 router.get('/',(req,res,next)=>{
-    res.send(`<h1>Welcome to Express JS</h1><br><form action='add-product' method='GET'><button type='submit'>Add-Product</button></form>`);
+res.sendFile(path.join(rootDir,'views','shop.html'));
 }); 
 
 module.exports = router;
