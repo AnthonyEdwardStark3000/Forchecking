@@ -1,0 +1,16 @@
+<%-include('includes/header.ejs')%>
+<div class="datas">
+  <%if(users.length>0){%>
+  <ul>
+    <%for(let user of users){%>
+    <li><%=user.userName%></li>
+    <%}%>
+  </ul>
+  <%} else{%>
+  <h2>No user added yet</h2>
+  <div class="end">
+    <a href="/">Back</a>
+    <%}%>
+  </div>
+</div>
+<%-include('includes/footer.ejs')%>
