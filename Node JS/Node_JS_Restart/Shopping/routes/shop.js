@@ -9,5 +9,7 @@ const rootDir = require('../util/path');
 const productsController = require('../controllers/products');
 
 router.get('/',productsController.getProducts); 
+router.get('/products',productsController.getIndexProducts); 
+router.get('/cart',productsController.getCartProducts); 
 
 module.exports = router;

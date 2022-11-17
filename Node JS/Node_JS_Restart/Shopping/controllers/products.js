@@ -5,7 +5,7 @@ exports.getAddProduct = (req,res,next)=>{
     // res.status(200).render('add-product',{title:'Add Product',path:'/admin/add-product'});
     
     // For handlebar
-    res.status(200).render('add-product',{
+    res.status(200).render('admin/add-product',{
         title:'Add Product',
         path:'/admin/add-product',
         productCss:true,
@@ -21,14 +21,14 @@ exports.postAddProduct = (req,res,next)=>{
 };
 
 exports.getProducts = (req,res,next)=>{
-const products = Product.fetchAll();
+Product.fetchAll((products)=>{
 console.log('From shop.js handling admin.js Data', products);
 // res.sendFile(path.join(rootDir,'views','shop.html'));
 // For pug 
 // res.render('shop',{prods:products,title:'Shopify',path:'/'});
 
 // For handlebar
-res.render('shop',{
+res.render('shop/product-list',{
     prods:products,
     title:'Shopify',
     path:'/',
@@ -36,4 +36,17 @@ res.render('shop',{
     productCss:true,
     activeShop:true,
 });
+});
+};
+// My try
+exports.getIndexProducts = (req,res,err)=>{
+    res.render('shop/index.ejs',{title:'Index',path:'/products'});
+};
+
+exports.getCartProducts = (req,res,err)=>{
+    res.render('shop/cart.ejs',{title:'My Cart',path:'/cart'});
+};
+
+exports.getAdminProducts = (req,res,err)=>{
+    res.render('admin/admin-product-list.ejs',{title:'Admin Products',path:'/admin/products'});
 };
