@@ -50,25 +50,36 @@ main {
 }
 
 .form-control label,
-.form-control input {
+.form-control input,
+.form-control textarea
+ {
     width: 100%;
     display: block;
 }
 
-.form-control input {
+.form-control input,
+.form-control textarea {
     border: 1px solid red;
     font: inherit;
     border-radius: 2px;
+}
+
+.form-control input:focus,
+.form-control textarea:focus{
+    outline-color: #00695c;
 }
 
 .product-form {
     width: 20rem;
     max-width: 90%;
     margin: auto;
+    display: block;
 }
+
 .product-item {
     width: 20rem;
     max-width: 95%;
+    margin: 1rem;
 }
 
 .product__title {
