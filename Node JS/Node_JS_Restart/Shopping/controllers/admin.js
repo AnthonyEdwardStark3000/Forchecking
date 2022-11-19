@@ -9,7 +9,8 @@ exports.getAddProduct = (req,res,next)=>{
         title:'Add Product',
         path:'/admin/add-product',
         productCss:true,
-        activeAddProduct:true
+        activeAddProduct:true,
+        editing: false,
     }
     );
 };
@@ -30,12 +31,17 @@ exports.getEditProduct = (req,res,next)=>{
     if(!editMode){
         return res.redirect('/');
     }
-    res.status(200).render('admin/edit-product',{
-        title:'Edit Product',
-        path:'/admin/edit-product',
-        editing:editMode
-    }
-    );
+    const prodId = req.params.productId;
+    Product.findById(prodId,(product)=>{
+        console.log('product found:',product);
+        res.status(200).render('admin/edit-product',{
+            title:'Edit Product',
+            path:'/admin/edit-product',
+            editing:editMode,
+            product: product
+        }
+        );
+    });
 };
 
 exports.getProducts = (req,res,next)=>{
@@ -47,4 +53,8 @@ exports.getProducts = (req,res,next)=>{
     path:'/admin/products'
 });
 });
+};
+
+exports.postEditProduct = (req,res,next)=>{
+    console.log('Post Edit Product:',req.body);
 };
