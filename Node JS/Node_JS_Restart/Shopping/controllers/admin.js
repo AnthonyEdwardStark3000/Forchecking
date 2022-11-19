@@ -5,7 +5,7 @@ exports.getAddProduct = (req,res,next)=>{
     // res.status(200).render('add-product',{title:'Add Product',path:'/admin/add-product'});
     
     // For handlebar
-    res.status(200).render('admin/add-product',{
+    res.status(200).render('admin/edit-product',{
         title:'Add Product',
         path:'/admin/add-product',
         productCss:true,
@@ -23,6 +23,19 @@ exports.postAddProduct = (req,res,next)=>{
     console.log(product);
     product.save();
     res.redirect('/');
+};
+
+exports.getEditProduct = (req,res,next)=>{
+    const editMode = req.query.edit;
+    if(!editMode){
+        return res.redirect('/');
+    }
+    res.status(200).render('admin/edit-product',{
+        title:'Edit Product',
+        path:'/admin/edit-product',
+        editing:editMode
+    }
+    );
 };
 
 exports.getProducts = (req,res,next)=>{
