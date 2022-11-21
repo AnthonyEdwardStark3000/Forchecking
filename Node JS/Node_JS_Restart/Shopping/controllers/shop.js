@@ -39,8 +39,16 @@ exports.postCart = (req,res,next)=>{
     res.redirect('/cart');
 }
 
+exports.postCartDeleteProduct = (req,res,err)=>{
+    const prodId = req.body.productId;
+    Product.findById(prodId,product=>{
+        Cart.deleteProduct(prodId, product.price);
+        res.redirect('/cart');
+    });
+}
+
 // My try
-exports.getIndex = (req,res,err)=>{
+exports.getIndex = (req,res,next)=>{
    Product.fetchAll((products)=>{
     res.render('shop/index',{
     prods:products,
@@ -50,18 +58,29 @@ exports.getIndex = (req,res,err)=>{
 });
 };
 
-exports.getCart = (req,res,err)=>{
-    res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart'});
+exports.getCart = (req,res,next)=>{
+    Cart.getCart(cart=>{
+        Product.fetchAll(products=>{
+            const cartProducts = [];
+            for(let product of products){
+                const cartProductsData = cart.products.find(prod=>prod.id===product.id);
+                if(cartProductsData){
+                    cartProducts.push({productData:product,qty:cartProductsData.qty});
+                }
+            }
+            res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:cartProducts});
+        })
+    });
 };
 
-exports.getAdminProducts = (req,res,err)=>{
+exports.getAdminProducts = (req,res,next)=>{
     res.render('admin/admin-product-list.ejs',{title:'Admin Products',path:'/admin/products'});
 };
 
-exports.getCheckout = (req,res,err)=>{
+exports.getCheckout = (req,res,next)=>{
     res.render('shop/checkout.ejs',{title:'Checkout',path:'/checkout'});
 };
 
-exports.getOrders = (req,res,err)=>{
+exports.getOrders = (req,res,next)=>{
     res.render('shop/orders.ejs',{title:'Orders',path:'/orders'});
 };
