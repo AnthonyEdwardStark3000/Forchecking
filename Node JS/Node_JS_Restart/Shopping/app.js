@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 // const expressHbs = require('express-handlebars');
 
 //Establish DB connection
-const db = require('./util/database');
+const sequelize = require('./util/database');
 
 const app = express();
 
@@ -28,11 +28,11 @@ const AdminRoutesData = require('./routes/admin');
 const UserRoutes = require('./routes/shop');
 const ErrorRoutes = require('./routes/404');
 
-db.execute('SELECT * FROM products').then(result=>{
-    console.log(result[0]);
-}).catch(err=>{
-    console.log('Error during DB interaction:',err);
-});
+// db.execute('SELECT * FROM products').then(result=>{
+//     console.log(result[0]);
+// }).catch(err=>{
+//     console.log('Error during DB interaction:',err);
+// });
 
 // Using External css
 app.use(express.static(path.join(__dirname,'public')));
@@ -42,4 +42,8 @@ app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
 app.use(ErrorRoutes);
 
-app.listen(3000);
+sequelize.sync().then((result)=>{
+    app.listen(3000);
+}).catch((err)=>{
+    console.log('error occurred while syncing:',err);
+});

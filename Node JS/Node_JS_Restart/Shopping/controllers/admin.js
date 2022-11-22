@@ -25,10 +25,17 @@ exports.postAddProduct = (req,res,next)=>{
     console.log('Post Add product:',product);
     // product.save();
     // res.redirect('/');
-    product.save().then(()=>{
-        res.redirect('/');
-    }).catch(err=>{
-        console.log(err);
+    //mysql
+    // product.save().then(()=>{
+    //     res.redirect('/');
+    // }).catch(err=>{
+    //     console.log(err);
+    // });
+    //sequelize
+    Product.create({title:title,imageUrl:imageUrl,price:price,description:description}).then((result)=>{
+        console.log('creating a table:');
+    }).catch((err)=>{
+        console.log('error while creating:',err);
     });
 };
 
