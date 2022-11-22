@@ -2,32 +2,55 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getProducts = (req,res,next)=>{
-Product.fetchAll((products)=>{
-// console.log('From shop.js handling admin.js Data', products);
+// Product.fetchAll((products)=>{
 
-// res.sendFile(path.join(rootDir,'views','shop.html'));
-// For pug 
-// res.render('shop',{prods:products,title:'Shopify',path:'/'});
+// // console.log('From shop.js handling admin.js Data', products);
 
-// For handlebar
-res.render('shop/product-list',{
-    prods:products,
+// // res.sendFile(path.join(rootDir,'views','shop.html'));
+// // For pug 
+// // res.render('shop',{prods:products,title:'Shopify',path:'/'});
+
+// // For handlebar
+
+// res.render('shop/product-list',{
+//     prods:products,
+//     title:'All products',
+//     path:'/products',
+//     hasProducts:products.length>0?true:false,
+//     productCss:true,
+//     activeShop:true,
+// });
+// });
+ //My Sql
+    Product.fetchAll().then(([rows,fieldData])=>{
+       res.render('shop/product-list',{
+    prods: rows,
     title:'All products',
     path:'/products',
-    hasProducts:products.length>0?true:false,
+    hasProducts:rows.length>0?true:false,
     productCss:true,
     activeShop:true,
-});
-});
+}); 
+    }).catch(err=>{
+        console.log(err);
+    });
 };
 
 exports.getProduct = (req,res,next)=>{
     const prodId = req.params.productId;
-    Product.findById(prodId,product=>{
-        console.log('The product that is clicked:',product);
-        res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
-    });
+    // Product.findById(prodId,product=>{
+    //     console.log('The product that is clicked:',product);
+    //     res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
+    // });
     // res.redirect('/');
+
+    //My sql
+    Product.findById(prodId).then(([rows,fieldData])=>{
+        console.log('The product that is clicked:',rows);
+        res.render('shop/product-details',{product:rows[0],title:rows.title,path:'/products'});
+    }).catch(err=>{
+        console.log('Getting single product in shop.js :',err);
+    });
 };
 
 exports.postCart = (req,res,next)=>{
@@ -49,13 +72,22 @@ exports.postCartDeleteProduct = (req,res,err)=>{
 
 // My try
 exports.getIndex = (req,res,next)=>{
-   Product.fetchAll((products)=>{
+//    Product.fetchAll((products)=>{
+//     res.render('shop/index',{
+//     prods:products,
+//     title:'Shopify',
+//     path:'/'
+// });
+// });
+
+//Mysql
+    Product.fetchAll().then(([rows,fieldData])=>{
     res.render('shop/index',{
-    prods:products,
-    title:'Shopify',
-    path:'/'
-});
-});
+        prods: rows,
+        title:'Shopify',
+        path:'/'
+    }); 
+    }).catch(err=>{console.log(err)});
 };
 
 exports.getCart = (req,res,next)=>{
