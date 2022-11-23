@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 
 //Establish DB connection
 const sequelize = require('./util/database');
+const Product = require('./models/product');
+const User = require('./models/user');
 
 const app = express();
 
@@ -42,8 +44,24 @@ app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
 app.use(ErrorRoutes);
 
-sequelize.sync().then((result)=>{
+Product.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
+User.hasMany(Product);
+
+// sequelize.sync({force:true})
+sequelize.sync()
+.then((result)=>{
+    return User.findByPk(1);
+})
+.then(user=>{
+    if(!user){
+        return User.create({name:'checkUser',email:'checkUser01@gmail.com'});
+    }
+    return user
+})
+.then(user=>{
+    console.log(user);
     app.listen(3000);
-}).catch((err)=>{
+})
+.catch((err)=>{
     console.log('error occurred while syncing:',err);
 });

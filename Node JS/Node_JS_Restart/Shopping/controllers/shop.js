@@ -22,17 +22,30 @@ exports.getProducts = (req,res,next)=>{
 // });
 // });
  //My Sql
-    Product.fetchAll().then(([rows,fieldData])=>{
-       res.render('shop/product-list',{
-    prods: rows,
-    title:'All products',
-    path:'/products',
-    hasProducts:rows.length>0?true:false,
-    productCss:true,
-    activeShop:true,
-}); 
+//     Product.fetchAll().then(([rows,fieldData])=>{
+//        res.render('shop/product-list',{
+//     prods: rows,
+//     title:'All products',
+//     path:'/products',
+//     hasProducts:rows.length>0?true:false,
+//     productCss:true,
+//     activeShop:true,
+// }); 
+//     }).catch(err=>{
+//         console.log(err);
+//     });
+//Sequelize
+    Product.findAll().then(products=>{
+         res.render('shop/product-list',{
+        prods: products,
+        title:'All Products',
+        path:'/products',    
+        hasProducts:products.length>0?true:false,
+        productCss:true,
+        activeShop:true,
+    }); 
     }).catch(err=>{
-        console.log(err);
+        console.log('while fetching all data from DB:',err);
     });
 };
 
@@ -45,12 +58,26 @@ exports.getProduct = (req,res,next)=>{
     // res.redirect('/');
 
     //My sql
-    Product.findById(prodId).then(([rows,fieldData])=>{
+    // Product.findById(prodId).then(([rows,fieldData])=>{
+    //     console.log('The product that is clicked:',rows);
+    //     res.render('shop/product-details',{product:rows[0],title:rows.title,path:'/products'});
+    // }).catch(err=>{
+    //     console.log('Getting single product in shop.js :',err);
+    // });
+
+    //sequelize
+    Product.findByPk(prodId).then((rows,fieldData)=>{
         console.log('The product that is clicked:',rows);
-        res.render('shop/product-details',{product:rows[0],title:rows.title,path:'/products'});
+        res.render('shop/product-details',{product:rows,title:rows.title,path:'/products'});
     }).catch(err=>{
         console.log('Getting single product in shop.js :',err);
     });
+    // Product.findAll({where:{id:prodId}}).then((rows,fieldData)=>{
+    //     console.log('The product that is clicked:',rows[0]);
+    //     res.render('shop/product-details',{product:rows[0],title:rows[0].title,path:'/products'});
+    // }).catch(err=>{
+    //     console.log('Getting single product in shop.js :',err);
+    // });
 };
 
 exports.postCart = (req,res,next)=>{
@@ -80,14 +107,24 @@ exports.getIndex = (req,res,next)=>{
 // });
 // });
 
-//Mysql
-    Product.fetchAll().then(([rows,fieldData])=>{
-    res.render('shop/index',{
-        prods: rows,
+ //Mysql
+    // Product.fetchAll().then(([rows,fieldData])=>{
+    // res.render('shop/index',{
+    //     prods: rows,
+    //     title:'Shopify',
+    //     path:'/'
+    // }); 
+    // }).catch(err=>{console.log(err)});
+    //Sequelize
+    Product.findAll().then(products=>{
+         res.render('shop/index',{
+        prods: products,
         title:'Shopify',
         path:'/'
     }); 
-    }).catch(err=>{console.log(err)});
+    }).catch(err=>{
+        console.log('while fetching all data from DB:',err);
+    });
 };
 
 exports.getCart = (req,res,next)=>{

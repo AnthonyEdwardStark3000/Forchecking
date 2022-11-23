@@ -32,8 +32,10 @@ exports.postAddProduct = (req,res,next)=>{
     //     console.log(err);
     // });
     //sequelize
-    Product.create({title:title,imageUrl:imageUrl,price:price,description:description}).then((result)=>{
+    Product.create({title:title,imageUrl:imageUrl,price:price,description:description})
+    .then((result)=>{
         console.log('creating a table:');
+        res.redirect('/admin/products');
     }).catch((err)=>{
         console.log('error while creating:',err);
     });
@@ -45,7 +47,17 @@ exports.getEditProduct = (req,res,next)=>{
         return res.redirect('/');
     }
     const prodId = req.params.productId;
-    Product.findById(prodId,(product)=>{
+    // Product.findById(prodId,(product)=>{
+    //     console.log('product found:',product);
+    //     res.status(200).render('admin/edit-product',{
+    //         title:'Edit Product',
+    //         path:'/admin/edit-product',
+    //         editing:editMode,
+    //         product: product
+    //     }
+    //     );
+    // });
+    Product.findByPk(prodId).then((product)=>{
         console.log('product found:',product);
         res.status(200).render('admin/edit-product',{
             title:'Edit Product',
@@ -54,18 +66,27 @@ exports.getEditProduct = (req,res,next)=>{
             product: product
         }
         );
-    });
+    }).catch(err=>{console.log('While getting edit product:',err)});
 };
 
 exports.getProducts = (req,res,next)=>{
-    Product.fetchAll((products)=>{
+//     Product.fetchAll((products)=>{
+//     console.log('From admin.js handling products Data');
+//     res.render('admin/admin-product-list',{
+//     prods:products,
+//     title:'Admin products',
+//     path:'/admin/products'
+// });
+// });
+//Sequelize
+Product.findAll().then((products)=>{
     console.log('From admin.js handling products Data');
     res.render('admin/admin-product-list',{
     prods:products,
     title:'Admin products',
     path:'/admin/products'
 });
-});
+}).catch(err=>{console.log(err)});
 };
 
 exports.postEditProduct = (req,res,next)=>{
@@ -75,16 +96,36 @@ exports.postEditProduct = (req,res,next)=>{
     const updatedImageUrl = req.body.imageUrl;
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.description;
-    const updatedProduct = new Product(prodId,updatedTitle,updatedImageUrl,updatedPrice,updatedDescription);
-    console.log('changed product',updatedProduct);    
-    updatedProduct.save();
-    res.redirect('/admin/products');
+    // const updatedProduct = new Product(prodId,updatedTitle,updatedImageUrl,updatedPrice,updatedDescription);
+    // console.log('changed product',updatedProduct);    
+    // updatedProduct.save();
+    // res.redirect('/admin/products');
+    Product.findByPk(prodId).then((product)=>{
+        product.title = updatedTitle;
+        product.imageUrl = updatedImageUrl;
+        product.price = updatedPrice;
+        product.description = updatedDescription;
+        product.save();
+    }).then(result=>{
+        console.log('Updated products',result);
+        res.redirect('/admin/products');
+    }).catch(err=>{
+        console.log('Error while editing:',err);
+    });
 };
 
 //
 exports.postDeleteProduct = (req,res,next)=>{
     const prodId = req.body.productId;
     console.log('Product ID from postDeleteProduct:',prodId);
-    Product.deleteById(prodId);
-    res.redirect('/admin/products');
+    // Product.deleteById(prodId);
+    // res.redirect('/admin/products');
+    Product.findByPk(prodId).then((product)=>{
+       return product.destroy();
+    }).then(result=>{
+        console.log('Deleted the product successfully');
+        res.redirect('/admin/products');
+    }).catch(err=>{
+        console.log('While deleting Product:',err);
+    });
 }
