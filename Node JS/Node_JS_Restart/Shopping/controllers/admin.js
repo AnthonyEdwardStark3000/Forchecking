@@ -32,9 +32,10 @@ exports.postAddProduct = (req,res,next)=>{
     //     console.log(err);
     // });
     //sequelize
-    Product.create({title:title,imageUrl:imageUrl,price:price,description:description})
+    // Product.create({title:title,imageUrl:imageUrl,price:price,description:description,userId:req.user.id})
+    req.user.createProduct({title:title,imageUrl:imageUrl,price:price,description:description})
     .then((result)=>{
-        console.log('creating a table:');
+        console.log('creating a table:',result);
         res.redirect('/admin/products');
     }).catch((err)=>{
         console.log('error while creating:',err);

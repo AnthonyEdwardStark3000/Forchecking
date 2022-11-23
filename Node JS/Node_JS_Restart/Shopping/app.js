@@ -40,6 +40,16 @@ const ErrorRoutes = require('./routes/404');
 app.use(express.static(path.join(__dirname,'public')));
 //
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use((req,res,next)=>{
+    User.findByPk(1)
+    .then(
+        user=>{
+        req.user = user;next();
+    })
+    .catch(err=>{console.log(err)});
+});
+
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
 app.use(ErrorRoutes);
@@ -59,7 +69,7 @@ sequelize.sync()
     return user
 })
 .then(user=>{
-    console.log(user);
+    // console.log(user);
     app.listen(3000);
 })
 .catch((err)=>{
