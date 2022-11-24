@@ -21,8 +21,8 @@ exports.postAddProduct = (req,res,next)=>{
     console.log('check the imageUrl',imageUrl);
     const price = req.body.price;
     const description = req.body.description;
-    const product = new Product(null,title,imageUrl,price,description);
-    console.log('Post Add product:',product);
+    // const product = new Product(null,title,imageUrl,price,description);
+    // console.log('Post Add product:',product);
     // product.save();
     // res.redirect('/');
     //mysql
@@ -31,10 +31,19 @@ exports.postAddProduct = (req,res,next)=>{
     // }).catch(err=>{
     //     console.log(err);
     // });
+    
     //sequelize
     // Product.create({title:title,imageUrl:imageUrl,price:price,description:description,userId:req.user.id})
-    req.user.createProduct({title:title,imageUrl:imageUrl,price:price,description:description})
-    .then((result)=>{
+    // req.user.createProduct({title:title,imageUrl:imageUrl,price:price,description:description})
+    // .then((result)=>{
+    //     console.log('creating a table:',result);
+    //     res.redirect('/admin/products');
+    // }).catch((err)=>{
+    //     console.log('error while creating:',err);
+    // });
+
+    const product = new Product(title,price,imageUrl,description);
+    product.save().then(result=>{
         console.log('creating a table:',result);
         res.redirect('/admin/products');
     }).catch((err)=>{
@@ -42,91 +51,98 @@ exports.postAddProduct = (req,res,next)=>{
     });
 };
 
-exports.getEditProduct = (req,res,next)=>{
-    const editMode = req.query.edit;
-    if(!editMode){
-        return res.redirect('/');
-    }
-    const prodId = req.params.productId;
-    // Product.findById(prodId,(product)=>{
-    //     console.log('product found:',product);
-    //     res.status(200).render('admin/edit-product',{
-    //         title:'Edit Product',
-    //         path:'/admin/edit-product',
-    //         editing:editMode,
-    //         product: product
-    //     }
-    //     );
-    // });
-    Product.findByPk(prodId).then((product)=>{
-        console.log('product found:',product);
-        res.status(200).render('admin/edit-product',{
-            title:'Edit Product',
-            path:'/admin/edit-product',
-            editing:editMode,
-            product: product
-        }
-        );
-    }).catch(err=>{console.log('While getting edit product:',err)});
-};
+// exports.getEditProduct = (req,res,next)=>{
+//     const editMode = req.query.edit;
+//     if(!editMode){
+//         return res.redirect('/');
+//     }
+//     const prodId = req.params.productId;
+//     // Product.findById(prodId,(product)=>{
+//     //     console.log('product found:',product);
+//     //     res.status(200).render('admin/edit-product',{
+//     //         title:'Edit Product',
+//     //         path:'/admin/edit-product',
+//     //         editing:editMode,
+//     //         product: product
+//     //     }
+//     //     );
+//     // });
 
-exports.getProducts = (req,res,next)=>{
-//     Product.fetchAll((products)=>{
+//     // Product.findByPk(prodId).then((product)=>{
+//     req.user.getProducts({where:{id:prodId}}).then((products)=>{
+//         console.log('product found:',products);
+//         const product =products[0];
+//         if(!products){
+//             res.redirect('/');
+//         }
+//         res.status(200).render('admin/edit-product',{
+//             title:'Edit Product',
+//             path:'/admin/edit-product',
+//             editing:editMode,
+//             product: product
+//         }
+//         );
+//     }).catch(err=>{console.log('While getting edit product:',err)});
+// };
+
+// exports.getProducts = (req,res,next)=>{
+// //     Product.fetchAll((products)=>{
+// //     console.log('From admin.js handling products Data');
+// //     res.render('admin/admin-product-list',{
+// //     prods:products,
+// //     title:'Admin products',
+// //     path:'/admin/products'
+// // });
+// // });
+// //Sequelize
+// // Product.findAll()
+// req.user.getProducts().then((products)=>{
 //     console.log('From admin.js handling products Data');
 //     res.render('admin/admin-product-list',{
 //     prods:products,
 //     title:'Admin products',
 //     path:'/admin/products'
 // });
-// });
-//Sequelize
-Product.findAll().then((products)=>{
-    console.log('From admin.js handling products Data');
-    res.render('admin/admin-product-list',{
-    prods:products,
-    title:'Admin products',
-    path:'/admin/products'
-});
-}).catch(err=>{console.log(err)});
-};
+// }).catch(err=>{console.log(err)});
+// };
 
-exports.postEditProduct = (req,res,next)=>{
-    console.log('checking all the product:',req.body);
-    const prodId = req.body.productId;
-    const updatedTitle = req.body.title;
-    const updatedImageUrl = req.body.imageUrl;
-    const updatedPrice = req.body.price;
-    const updatedDescription = req.body.description;
-    // const updatedProduct = new Product(prodId,updatedTitle,updatedImageUrl,updatedPrice,updatedDescription);
-    // console.log('changed product',updatedProduct);    
-    // updatedProduct.save();
-    // res.redirect('/admin/products');
-    Product.findByPk(prodId).then((product)=>{
-        product.title = updatedTitle;
-        product.imageUrl = updatedImageUrl;
-        product.price = updatedPrice;
-        product.description = updatedDescription;
-        product.save();
-    }).then(result=>{
-        console.log('Updated products',result);
-        res.redirect('/admin/products');
-    }).catch(err=>{
-        console.log('Error while editing:',err);
-    });
-};
+// exports.postEditProduct = (req,res,next)=>{
+//     console.log('checking all the product:',req.body);
+//     const prodId = req.body.productId;
+//     const updatedTitle = req.body.title;
+//     const updatedImageUrl = req.body.imageUrl;
+//     const updatedPrice = req.body.price;
+//     const updatedDescription = req.body.description;
+//     // const updatedProduct = new Product(prodId,updatedTitle,updatedImageUrl,updatedPrice,updatedDescription);
+//     // console.log('changed product',updatedProduct);    
+//     // updatedProduct.save();
+//     // res.redirect('/admin/products');
+//     Product.findByPk(prodId).then((product)=>{
+//         product.title = updatedTitle;
+//         product.imageUrl = updatedImageUrl;
+//         product.price = updatedPrice;
+//         product.description = updatedDescription;
+//         product.save();
+//     }).then(result=>{
+//         console.log('Updated products',result);
+//         res.redirect('/admin/products');
+//     }).catch(err=>{
+//         console.log('Error while editing:',err);
+//     });
+// };
 
-//
-exports.postDeleteProduct = (req,res,next)=>{
-    const prodId = req.body.productId;
-    console.log('Product ID from postDeleteProduct:',prodId);
-    // Product.deleteById(prodId);
-    // res.redirect('/admin/products');
-    Product.findByPk(prodId).then((product)=>{
-       return product.destroy();
-    }).then(result=>{
-        console.log('Deleted the product successfully');
-        res.redirect('/admin/products');
-    }).catch(err=>{
-        console.log('While deleting Product:',err);
-    });
-}
+// //
+// exports.postDeleteProduct = (req,res,next)=>{
+//     const prodId = req.body.productId;
+//     console.log('Product ID from postDeleteProduct:',prodId);
+//     // Product.deleteById(prodId);
+//     // res.redirect('/admin/products');
+//     Product.findByPk(prodId).then((product)=>{
+//        return product.destroy();
+//     }).then(result=>{
+//         console.log('Deleted the product successfully');
+//         res.redirect('/admin/products');
+//     }).catch(err=>{
+//         console.log('While deleting Product:',err);
+//     });
+// }
