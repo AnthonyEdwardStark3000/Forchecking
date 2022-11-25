@@ -35,22 +35,39 @@ exports.getProducts = (req,res,next)=>{
 //         console.log(err);
 //     });
 //Sequelize
-    Product.findAll().then(products=>{
-         res.render('shop/product-list',{
+    // Product.findAll().then(products=>{
+    //      res.render('shop/product-list',{
+    //     prods: products,
+    //     title:'All Products',
+    //     path:'/products',    
+    //     hasProducts:products.length>0?true:false,
+    //     productCss:true,
+    //     activeShop:true,
+    // }); 
+    // })
+    // .catch(err=>{
+    //     console.log('while fetching all data from DB:',err);
+    // });
+    Product.fetchAll()
+    .then(
+        products=>{
+        res.render('shop/product-list',{
         prods: products,
         title:'All Products',
         path:'/products',    
         hasProducts:products.length>0?true:false,
         productCss:true,
         activeShop:true,
-    }); 
-    }).catch(err=>{
+    });
+})
+    .catch(err=>{
         console.log('while fetching all data from DB:',err);
     });
 };
 
 exports.getProduct = (req,res,next)=>{
     const prodId = req.params.productId;
+    console.log('inside get product:',prodId);
     // Product.findById(prodId,product=>{
     //     console.log('The product that is clicked:',product);
     //     res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
@@ -66,18 +83,27 @@ exports.getProduct = (req,res,next)=>{
     // });
 
     //sequelize
-    Product.findByPk(prodId).then((rows,fieldData)=>{
-        console.log('The product that is clicked:',rows);
-        res.render('shop/product-details',{product:rows,title:rows.title,path:'/products'});
-    }).catch(err=>{
-        console.log('Getting single product in shop.js :',err);
-    });
+    // Product.findByPk(prodId).then((rows,fieldData)=>{
+    //     console.log('The product that is clicked:',rows);
+    //     res.render('shop/product-details',{product:rows,title:rows.title,path:'/products'});
+    // }).catch(err=>{
+    //     console.log('Getting single product in shop.js :',err);
+    // });
     // Product.findAll({where:{id:prodId}}).then((rows,fieldData)=>{
     //     console.log('The product that is clicked:',rows[0]);
     //     res.render('shop/product-details',{product:rows[0],title:rows[0].title,path:'/products'});
     // }).catch(err=>{
     //     console.log('Getting single product in shop.js :',err);
     // });
+
+    // Mongo DB
+    Product.findById(prodId)
+    .then(product=>{
+        console.log('retrieved single product:',product);
+        res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
+    }).catch(err=>{
+        console.log('at fetching:',err);
+    })
 };
 
 exports.postCart = (req,res,next)=>{
@@ -157,8 +183,21 @@ exports.getIndex = (req,res,next)=>{
     //     path:'/'
     // }); 
     // }).catch(err=>{console.log(err)});
+
     //Sequelize
-    Product.findAll().then(products=>{
+    // Product.findAll().then(products=>{
+    //      res.render('shop/index',{
+    //     prods: products,
+    //     title:'Shopify',
+    //     path:'/'
+    // }); 
+    // }).catch(err=>{
+    //     console.log('while fetching all data from DB:',err);
+    // });
+    //Mongo
+    Product.fetchAll().then(
+        products=>{
+            console.log('fetch all:',products);
          res.render('shop/index',{
         prods: products,
         title:'Shopify',
