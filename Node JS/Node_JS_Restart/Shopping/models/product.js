@@ -73,7 +73,7 @@ class Product {
         const db = getDb();
         return db.collection('products').find({_id:new mongodb.ObjectId(prodId)}).next().then(
             product=>{
-                console.log('clicked Product:',product);
+                console.log('clicked Product:',product._id);
                 return product;
             }
         )

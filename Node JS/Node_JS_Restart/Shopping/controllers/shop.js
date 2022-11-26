@@ -67,7 +67,8 @@ exports.getProducts = (req,res,next)=>{
 
 exports.getProduct = (req,res,next)=>{
     const prodId = req.params.productId;
-    console.log('inside get product:',prodId);
+    console.log('inside get product:',req.params);
+    console.log(prodId);
     // Product.findById(prodId,product=>{
     //     console.log('The product that is clicked:',product);
     //     res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
@@ -240,6 +241,7 @@ exports.getCart = (req,res,next)=>{
     //     console.log('Error while getting Cart:',err)
     // });
     .then(products=>{
+        console.log('get cart:',products);
         res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
