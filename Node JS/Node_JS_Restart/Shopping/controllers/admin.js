@@ -43,7 +43,7 @@ exports.postAddProduct = (req,res,next)=>{
     //     console.log('error while creating:',err);
     // });
 
-    const product = new Product(title,price,imageUrl,description);
+    const product = new Product(title,price,imageUrl,description,null,req.user._id);
     product.save().then(result=>{
         console.log('creating a table:',result);
         res.redirect('/admin/products');
@@ -186,6 +186,7 @@ exports.postDeleteProduct = (req,res,next)=>{
     Product.deleteById(prodId)
     .then(
         result=>{console.log('Delete controller success');
-        res.redirect('/admin/products')})
+        res.redirect('/admin/products');
+    })
     .catch(err=>{console.log('deletion controller:',err)});
 }

@@ -35,6 +35,7 @@ const UserRoutes = require('./routes/shop');
 const ErrorRoutes = require('./routes/404');
 const mongoConnect = require('./util/database').mongoConnect;
 
+const User = require("./models/user");
 // db.execute('SELECT * FROM products').then(result=>{
 //     console.log(result[0]);
 // }).catch(err=>{
@@ -53,7 +54,16 @@ app.use((req,res,next)=>{
     //     req.user = user;next();
     // })
     // .catch(err=>{console.log(err)});
-    next();
+ 
+    // Mongodb
+    User.findById("63821258a6fd1c6dcb92a7c0")
+    .then(
+        user=>{
+        // req.user = user;
+        req.user = new User(user.name,user.email,user.cart,user._id);
+        next();
+    })
+    .catch(err=>{console.log(err)});
 });
 
 app.use('/admin',AdminRoutesData.route);
