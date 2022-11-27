@@ -161,17 +161,23 @@ exports.postCart = (req,res,next)=>{
 exports.postCartDeleteProduct = (req,res,err)=>{
     console.log('Deleting a product');
     const prodId = req.body.productId;
-    req.user.getCart()
-    .then(cart=>{
-        return cart.getProducts({where:{id:prodId}})
-    }).then(products=>{
-        const product = products[0];
-        return product.cartItem.destroy();
-    })
-    .then(result=>{
-        console.log('Product deleted');
+    // req.user.getCart()
+    // .then(cart=>{
+    //     return cart.getProducts({where:{id:prodId}})
+    // }).then(products=>{
+    //     const product = products[0];
+    //     return product.cartItem.destroy();
+    // })
+    // .then(result=>{
+    //     console.log('Product deleted');
+    //     res.redirect('/cart');
+    // }).catch(err=>{console.log('Error while deleting data:',err)})
+    req.user.deleteItemFromCart(prodId).then(result=>{
+        console.log('successfully deleted from user cart:');
         res.redirect('/cart');
-    }).catch(err=>{console.log('Error while deleting data:',err)})
+    }).catch(err=>{
+        console.log('Error deleting product from user cart :',err);
+    });    
 }
 
 // My try
@@ -258,37 +264,44 @@ exports.getCheckout = (req,res,next)=>{
 
 exports.postOrder = (req,res,next)=>{
     let fetchedCart;
-    req.user.getCart()
-    .then(cart=>{
-        fetchedCart = cart;
-        return cart.getProducts();
+    // req.user.getCart()
+    // .then(cart=>{
+    //     fetchedCart = cart;
+    //     return cart.getProducts();
+    // })
+    // .then(products=>{
+    //     // console.log('Products in Order:',products);
+    //     return req.user.createOrder()
+    //     .then(order=>{
+    //         return order.addProducts(
+    //             products.map(product=>{
+    //                 product.orderItem = {quantity:product.cartItem.quantity};
+    //                 return product;
+    //             })
+    //         )
+    //     })
+    //     .then(result=>{
+    //        return fetchedCart.setProducts(null);
+    //     })
+    //     .then(result=>{
+    //         res.redirect('/orders');
+    //     })
+    //     .catch(err=>{
+    //         console.log('Error while creating order table:',err)
+    //     })
+    // })
+    // .catch(err=>{console.log(err)});
+    req.user.addOrder().then(result=>{
+        console.log('order added successfully:');
+        res.redirect('/orders');
+    }).catch(err=>{
+        console.log('error while adding order:',err);
     })
-    .then(products=>{
-        // console.log('Products in Order:',products);
-        return req.user.createOrder()
-        .then(order=>{
-            return order.addProducts(
-                products.map(product=>{
-                    product.orderItem = {quantity:product.cartItem.quantity};
-                    return product;
-                })
-            )
-        })
-        .then(result=>{
-           return fetchedCart.setProducts(null);
-        })
-        .then(result=>{
-            res.redirect('/orders');
-        })
-        .catch(err=>{
-            console.log('Error while creating order table:',err)
-        })
-    })
-    .catch(err=>{console.log(err)});
 };
 
 exports.getOrders = (req,res,next)=>{
-    req.user.getOrders({include:['products']}).then(orders=>{
+    // req.user.getOrders({include:['products']}).then(orders=>{
+    req.user.getOrders().then(orders=>{
         res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders});
     }).catch(err=>{
         console.log('Error while getting order:',err);
