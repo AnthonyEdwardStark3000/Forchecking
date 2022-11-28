@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 // const OrderItem = require('./models/order-item');
 
 const app = express();
+const mongoose = require('mongoose');
 
 // adding pug as view engine 
 
@@ -33,7 +34,7 @@ app.set('views','views');
 const AdminRoutesData = require('./routes/admin');
 const UserRoutes = require('./routes/shop');
 const ErrorRoutes = require('./routes/404');
-const mongoConnect = require('./util/database').mongoConnect;
+// const mongoConnect = require('./util/database').mongoConnect;
 
 const User = require("./models/user");
 // db.execute('SELECT * FROM products').then(result=>{
@@ -47,24 +48,24 @@ app.use(express.static(path.join(__dirname,'public')));
 //
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use((req,res,next)=>{
-    // User.findByPk(1)
-    // .then(
-    //     user=>{
-    //     req.user = user;next();
-    // })
-    // .catch(err=>{console.log(err)});
+// app.use((req,res,next)=>{
+//     // User.findByPk(1)
+//     // .then(
+//     //     user=>{
+//     //     req.user = user;next();
+//     // })
+//     // .catch(err=>{console.log(err)});
  
-    // Mongodb
-    User.findById("63821258a6fd1c6dcb92a7c0")
-    .then(
-        user=>{
-        // req.user = user;
-        req.user = new User(user.name,user.email,user.cart,user._id);
-        next();
-    })
-    .catch(err=>{console.log(err)});
-});
+//     // Mongodb
+//     User.findById("63821258a6fd1c6dcb92a7c0")
+//     .then(
+//         user=>{
+//         // req.user = user;
+//         req.user = new User(user.name,user.email,user.cart,user._id);
+//         next();
+//     })
+//     .catch(err=>{console.log(err)});
+// });
 
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
@@ -107,6 +108,18 @@ app.use(ErrorRoutes);
 // });
 
 //mongoDb
-mongoConnect(()=>{
-    app.listen(3000);
+// mongoConnect(()=>{
+//     app.listen(3000);
+// });
+
+// MongoDb mongoose
+mongoose.connect('mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb.net/?retryWrites=true&w=majority')
+.then(
+    result =>
+     {
+        app.listen(3000);
+        console.log('server started at port 3000');
+    }
+).catch(err=>{
+    console.log('Error while connecting with the Db:',err);
 });
