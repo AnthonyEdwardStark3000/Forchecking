@@ -43,11 +43,23 @@ exports.postAddProduct = (req,res,next)=>{
     //     console.log('error while creating:',err);
     // });
 
-    const product = new Product(title,price,imageUrl,description,null,req.user._id);
+    // const product = new Product(title,price,imageUrl,description,null,req.user._id);
+    // product.save().then(result=>{
+    //     console.log('creating a table:',result);
+    //     res.redirect('/admin/products');
+    // })
+    //using mongoose for mongodb
+    const product = new Product({
+        title:title,
+        price:price,
+        imageUrl:imageUrl,
+        description:description,
+        });
     product.save().then(result=>{
         console.log('creating a table:',result);
         res.redirect('/admin/products');
-    }).catch((err)=>{
+    })
+    .catch((err)=>{
         console.log('error while creating:',err);
     });
 };

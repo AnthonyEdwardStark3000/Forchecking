@@ -48,9 +48,12 @@ exports.getProducts = (req,res,next)=>{
     // .catch(err=>{
     //     console.log('while fetching all data from DB:',err);
     // });
-    Product.fetchAll()
+    // Product.fetchAll()
+    // mongodb mongoose
+    Product.find()
     .then(
         products=>{
+            console.log('Products received:',products);
         res.render('shop/product-list',{
         prods: products,
         title:'All Products',
@@ -210,7 +213,10 @@ exports.getIndex = (req,res,next)=>{
     //     console.log('while fetching all data from DB:',err);
     // });
     //Mongo
-    Product.fetchAll().then(
+    // Product.fetchAll()
+    // Mongodb mongoose
+    Product.find()
+    .then(
         products=>{
             console.log('fetch all:',products);
          res.render('shop/index',{

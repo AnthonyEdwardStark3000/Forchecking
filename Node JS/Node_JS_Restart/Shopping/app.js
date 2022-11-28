@@ -113,7 +113,7 @@ app.use(ErrorRoutes);
 // });
 
 // MongoDb mongoose
-mongoose.connect('mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb.net/shop?retryWrites=true&w=majority')
 .then(
     result =>
      {
