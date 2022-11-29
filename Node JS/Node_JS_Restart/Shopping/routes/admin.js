@@ -12,14 +12,14 @@ router.get('/add-product',adminController.getAddProduct);
 router.post('/add-product',adminController.postAddProduct);
 
 // //My try
-// // /admin/products
-// router.get('/products',adminController.getProducts);
+// /admin/products
+router.get('/products',adminController.getProducts);
 
-// // /admin/edit-product/:productId
-// router.get('/edit-product/:productId',adminController.getEditProduct);
+// /admin/edit-product/:productId
+router.get('/edit-product/:productId',adminController.getEditProduct);
 
-// router.post('/edit-product',adminController.postEditProduct);
+router.post('/edit-product',adminController.postEditProduct);
 
-// // // My try
-// router.post('/delete-product',adminController.postDeleteProduct);
+// // My try
+router.post('/delete-product',adminController.postDeleteProduct);
 module.exports.route = router;

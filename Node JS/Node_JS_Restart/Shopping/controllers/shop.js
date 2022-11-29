@@ -70,7 +70,7 @@ exports.getProducts = (req,res,next)=>{
 
 exports.getProduct = (req,res,next)=>{
     const prodId = req.params.productId;
-    console.log('inside get product:',req.params);
+    console.log('inside get product line 73:',req.params);
     console.log(prodId);
     // Product.findById(prodId,product=>{
     //     console.log('The product that is clicked:',product);
@@ -101,10 +101,16 @@ exports.getProduct = (req,res,next)=>{
     // });
 
     // Mongo DB
+    // Product.findById(prodId)
+    // MongodB mongoose
     Product.findById(prodId)
     .then(product=>{
         console.log('retrieved single product:',product);
-        res.render('shop/product-details',{product:product,title:product.title,path:'/products'});
+        res.render('shop/product-details',{
+            product: product,
+            title: product.title,
+            imageUrl: product.imageUrl,
+            path:'/products'});
     }).catch(err=>{
         console.log('at fetching:',err);
     })
@@ -311,5 +317,5 @@ exports.getOrders = (req,res,next)=>{
         res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders});
     }).catch(err=>{
         console.log('Error while getting order:',err);
-    });
+    });    
 };

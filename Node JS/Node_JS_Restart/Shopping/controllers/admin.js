@@ -55,6 +55,7 @@ exports.postAddProduct = (req,res,next)=>{
         imageUrl:imageUrl,
         description:description,
         });
+        console.log('product:',product);
     product.save().then(result=>{
         console.log('creating a table:',result);
         res.redirect('/admin/products');
@@ -134,7 +135,10 @@ exports.getProducts = (req,res,next)=>{
 // });
 // }).catch(err=>{console.log(err)});
         //mongoDb
-Product.fetchAll().then((products)=>{
+// Product.fetchAll()
+// mongoDb mongoose
+Product.find()
+.then((products)=>{
     console.log('From admin.js handling products Data');
     res.render('admin/admin-product-list',{
     prods:products,
@@ -169,9 +173,17 @@ exports.postEditProduct = (req,res,next)=>{
     // });
     
     //MongoDb
-
-       const product = new Product(updatedTitle,updatedPrice,updatedImageUrl,updatedDescription,prodId);
-        product.save().then(result=>{
+    //    const product = new Product(updatedTitle,updatedPrice,updatedImageUrl,updatedDescription,prodId);
+    // product.save()
+    // .then(result=>{
+    //MongoDb mongoose   
+    Product.findById(prodId).then(product=>{
+        product.title = updatedTitle;
+        product.imageUrl = updatedImageUrl;
+        product.price = updatedPrice;
+        product.description = updatedDescription;
+        return product.save()     
+    }).then(result=>{
         console.log('Updated products',result);
         res.redirect('/admin/products');
     }).catch(err=>{
@@ -195,7 +207,9 @@ exports.postDeleteProduct = (req,res,next)=>{
     //     console.log('While deleting Product:',err);
     // });
     //Mongo Db
-    Product.deleteById(prodId)
+    // Product.deleteById(prodId)
+    //Mongo Db mongoose
+    Product.findByIdAndRemove(prodId)
     .then(
         result=>{console.log('Delete controller success');
         res.redirect('/admin/products');
