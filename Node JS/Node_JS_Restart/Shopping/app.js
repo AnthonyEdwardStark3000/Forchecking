@@ -48,24 +48,26 @@ app.use(express.static(path.join(__dirname,'public')));
 //
 app.use(bodyParser.urlencoded({extended: true}));
 
-// app.use((req,res,next)=>{
-//     // User.findByPk(1)
-//     // .then(
-//     //     user=>{
-//     //     req.user = user;next();
-//     // })
-//     // .catch(err=>{console.log(err)});
+app.use((req,res,next)=>{
+    // User.findByPk(1)
+    // .then(
+    //     user=>{
+    //     req.user = user;next();
+    // })
+    // .catch(err=>{console.log(err)});
  
-//     // Mongodb
-//     User.findById("63821258a6fd1c6dcb92a7c0")
-//     .then(
-//         user=>{
-//         // req.user = user;
-//         req.user = new User(user.name,user.email,user.cart,user._id);
-//         next();
-//     })
-//     .catch(err=>{console.log(err)});
-// });
+    // Mongodb
+    User.findById("638620597b7d7c79e566d005")
+    .then(
+        user=>{
+        // req.user = user;
+        // req.user = new User(user.name,user.email,user.cart,user._id);
+        //Mongo db mongoose
+        req.user = user;
+        next();
+    })
+    .catch(err=>{console.log(err)});
+});
 
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
@@ -117,6 +119,16 @@ mongoose.connect('mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb
 .then(
     result =>
      {
+        User.findOne().then(user=>{
+            if(!user){
+                const user = new User({
+                    name:'suresh',
+                    email:'suresh@gmail.com',
+                    cart:{items:[]}
+                });
+                user.save();
+            }
+        })
         app.listen(3000);
         console.log('server started at port 3000');
     }
