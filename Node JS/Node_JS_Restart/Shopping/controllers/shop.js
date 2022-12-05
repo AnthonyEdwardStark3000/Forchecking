@@ -151,6 +151,7 @@ exports.postCart = (req,res,next)=>{
     //     .catch(err=>{console.log('err while getting cart product',err);})
     Product.findById(prodId).then(
         product=>{
+            console.log('Post cart:',product);
             return req.user.addToCart(product);
         }
     ).then(result =>{

@@ -139,6 +139,9 @@ exports.getProducts = (req,res,next)=>{
 // Product.fetchAll()
 // mongoDb mongoose
 Product.find()
+// .select('title price -_id')
+// .populate('userId','name')
+
 .then((products)=>{
     console.log('From admin.js handling products Data');
     res.render('admin/admin-product-list',{
