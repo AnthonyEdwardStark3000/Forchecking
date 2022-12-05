@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const Cart = require("../models/old_cart");
+const user = require("../models/user");
 
 exports.getProducts = (req,res,next)=>{
 // Product.fetchAll((products)=>{
@@ -251,7 +252,11 @@ exports.getCart = (req,res,next)=>{
     //     })
     // });
     // console.log(req);
-    req.user.getCart()
+    req.user
+    // .getCart()
+    //using mongoose
+    .populate('cart.items.productId')
+    // .execPopulate() 
     // .then(cart=>{
     //     // console.log(cart);
     //     return cart.getProducts().then(cartProducts=>{
@@ -260,8 +265,10 @@ exports.getCart = (req,res,next)=>{
     // }).catch(err=>{
     //     console.log('Error while getting Cart:',err)
     // });
-    .then(products=>{
-        console.log('get cart:',products);
+    // .then(products=>{
+    .then(user=>{
+        console.log('get cart:',user);
+        const products = user.cart.items;
         res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
