@@ -163,6 +163,7 @@ const userSchema = new Schema({
 userSchema.methods.addToCart = function(product){
      console.log('add to cart:',this);
         const cartProductIndex = this.cart.items.findIndex(cp=>{
+            console.log('error check:',cp);
             console.log('cp.productId:',cp.productId);
             console.log('product._id:',product._id);
             return cp.productId.toString() === product._id.toString();

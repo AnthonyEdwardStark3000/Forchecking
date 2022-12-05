@@ -152,6 +152,7 @@ exports.postCart = (req,res,next)=>{
     Product.findById(prodId).then(
         product=>{
             console.log('Post cart:',product);
+            console.log('user check:',req.user);
             return req.user.addToCart(product);
         }
     ).then(result =>{
