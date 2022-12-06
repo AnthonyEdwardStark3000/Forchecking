@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Order = require("../models/order");
 const Cart = require("../models/old_cart");
 const user = require("../models/user");
 
@@ -184,7 +185,10 @@ exports.postCartDeleteProduct = (req,res,err)=>{
     //     console.log('Product deleted');
     //     res.redirect('/cart');
     // }).catch(err=>{console.log('Error while deleting data:',err)})
-    req.user.deleteItemFromCart(prodId).then(result=>{
+    req.user
+    // .deleteItemFromCart(prodId)
+    .removeFromCart(prodId)
+    .then(result=>{
         console.log('successfully deleted from user cart:');
         res.redirect('/cart');
     }).catch(err=>{
@@ -284,7 +288,7 @@ exports.getCheckout = (req,res,next)=>{
 };
 
 exports.postOrder = (req,res,next)=>{
-    let fetchedCart;
+    // let fetchedCart;
     // req.user.getCart()
     // .then(cart=>{
     //     fetchedCart = cart;
@@ -312,7 +316,23 @@ exports.postOrder = (req,res,next)=>{
     //     })
     // })
     // .catch(err=>{console.log(err)});
-    req.user.addOrder().then(result=>{
+    req.user.populate('cart.items.productId')
+    .then(user=>{
+        const products = user.cart.items.map(i=>{
+            return {quantity:i.quantity,product:i.productId};
+        });
+        console.log('Products check:',products);
+         const order = new Order({
+        user:{
+            name:req.user.name,
+            userId: req.user
+        },
+        products: products
+    });
+       return order.save();
+    })
+    // req.user.addOrder()
+    .then(result=>{
         console.log('order added successfully:');
         res.redirect('/orders');
     }).catch(err=>{
