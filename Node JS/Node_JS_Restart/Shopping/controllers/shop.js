@@ -319,7 +319,7 @@ exports.postOrder = (req,res,next)=>{
     req.user.populate('cart.items.productId')
     .then(user=>{
         const products = user.cart.items.map(i=>{
-            return {quantity:i.quantity,product:i.productId};
+            return {quantity:i.quantity,product:{...i.productId._doc}};
         });
         console.log('Products check:',products);
          const order = new Order({
@@ -334,15 +334,22 @@ exports.postOrder = (req,res,next)=>{
     // req.user.addOrder()
     .then(result=>{
         console.log('order added successfully:');
+        return req.user.clearCart();
+    }).then(()=>{
         res.redirect('/orders');
-    }).catch(err=>{
+    }
+    )
+    .catch(err=>{
         console.log('error while adding order:',err);
     })
 };
 
 exports.getOrders = (req,res,next)=>{
     // req.user.getOrders({include:['products']}).then(orders=>{
-    req.user.getOrders().then(orders=>{
+    // req.user.getOrders()
+    //mongodb mongoose
+    Order.find({"user.userId":req.user._id})
+    .then(orders=>{
         res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders});
     }).catch(err=>{
         console.log('Error while getting order:',err);
