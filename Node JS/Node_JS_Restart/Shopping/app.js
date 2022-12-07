@@ -34,6 +34,7 @@ app.set('views','views');
 const AdminRoutesData = require('./routes/admin');
 const UserRoutes = require('./routes/shop');
 const ErrorRoutes = require('./routes/404');
+const AuthRoutes = require('./routes/auth');
 // const mongoConnect = require('./util/database').mongoConnect;
 
 const User = require("./models/user");
@@ -71,6 +72,7 @@ app.use((req,res,next)=>{
 
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
+app.use(AuthRoutes);
 app.use(ErrorRoutes);
 
 // Associations for Sequelize
