@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 // const expressHbs = require('express-handlebars');
 
 //Establish DB connection
@@ -14,6 +16,13 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const mongoose = require('mongoose');
+
+const MONGODB_CONNECTION_URI = 'mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb.net/shop?retryWrites=true&w=majority';
+
+const store = new MongoDBStore({
+    uri:MONGODB_CONNECTION_URI,
+    collection:'sessions',
+});
 
 // adding pug as view engine 
 
@@ -48,27 +57,34 @@ const User = require("./models/user");
 app.use(express.static(path.join(__dirname,'public')));
 //
 app.use(bodyParser.urlencoded({extended: true}));
+//session
+app.use(session({
+    secret:'My secret to unlock',
+    resave:false,
+    saveUninitialized:false,
+    store:store
+}));
 
-app.use((req,res,next)=>{
-    // User.findByPk(1)
-    // .then(
-    //     user=>{
-    //     req.user = user;next();
-    // })
-    // .catch(err=>{console.log(err)});
+// app.use((req,res,next)=>{
+//     // User.findByPk(1)
+//     // .then(
+//     //     user=>{
+//     //     req.user = user;next();
+//     // })
+//     // .catch(err=>{console.log(err)});
  
-    // Mongodb
-    User.findById("638e0b580ffd1b5c834bfe4d")
-    .then(
-        user=>{
-        // req.user = user;
-        // req.user = new User(user.name,user.email,user.cart,user._id);
-        //Mongo db mongoose
-        req.user = user;
-        next();
-    })
-    .catch(err=>{console.log(err)});
-});
+//     // Mongodb
+//     User.findById("638e0b580ffd1b5c834bfe4d")
+//     .then(
+//         user=>{
+//         // req.user = user;
+//         // req.user = new User(user.name,user.email,user.cart,user._id);
+//         //Mongo db mongoose
+//         req.user = user;
+//         next();
+//     })
+//     .catch(err=>{console.log(err)});
+// });
 
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
@@ -117,7 +133,7 @@ app.use(ErrorRoutes);
 // });
 
 // MongoDb mongoose
-mongoose.connect('mongodb+srv://suresh:4QxDcAZHwqDoB7BK@cluster0.c2cpwhf.mongodb.net/shop?retryWrites=true&w=majority')
+mongoose.connect(MONGODB_CONNECTION_URI)
 .then(
     result =>
      {
