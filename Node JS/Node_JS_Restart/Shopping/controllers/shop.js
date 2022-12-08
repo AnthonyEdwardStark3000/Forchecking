@@ -63,7 +63,7 @@ exports.getProducts = (req,res,next)=>{
         hasProducts:products.length>0?true:false,
         productCss:true,
         activeShop:true,
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
     });
 })
     .catch(err=>{
@@ -114,7 +114,7 @@ exports.getProduct = (req,res,next)=>{
             title: product.title,
             imageUrl: product.imageUrl,
             path:'/products',
-            isAuthenticated: req.isLoggedIn});
+            isAuthenticated: req.session.isLoggedIn});
     }).catch(err=>{
         console.log('at fetching:',err);
     })
@@ -238,7 +238,7 @@ exports.getIndex = (req,res,next)=>{
         prods: products,
         title:'Shopify',
         path:'/',
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
     }); 
     }).catch(err=>{
         console.log('while fetching all data from DB:',err);
@@ -277,7 +277,7 @@ exports.getCart = (req,res,next)=>{
         console.log('get cart:',user);
         const products = user.cart.items;
         res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products,
-    isAuthenticated: req.isLoggedIn});
+    isAuthenticated: req.session.isLoggedIn});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
     })
@@ -285,12 +285,12 @@ exports.getCart = (req,res,next)=>{
 
 exports.getAdminProducts = (req,res,next)=>{
     res.render('admin/admin-product-list.ejs',{title:'Admin Products',path:'/admin/products',
-    isAuthenticated: req.isLoggedIn});
+    isAuthenticated: req.session.isLoggedIn});
 };
 
 exports.getCheckout = (req,res,next)=>{
     res.render('shop/checkout.ejs',{title:'Checkout',path:'/checkout',
-    isAuthenticated: req.isLoggedIn});
+    isAuthenticated: req.session.isLoggedIn});
 };
 
 exports.postOrder = (req,res,next)=>{
@@ -357,7 +357,7 @@ exports.getOrders = (req,res,next)=>{
     Order.find({"user.userId":req.user._id})
     .then(orders=>{
         res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders,
-    isAuthenticated: req.isLoggedIn});
+    isAuthenticated: req.session.isLoggedIn});
     }).catch(err=>{
         console.log('Error while getting order:',err);
     });    
