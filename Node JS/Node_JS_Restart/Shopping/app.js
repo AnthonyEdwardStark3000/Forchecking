@@ -149,19 +149,20 @@ mongoose.connect(MONGODB_CONNECTION_URI)
 .then(
     result =>
      {
-        User.findOne().then(user=>{
-            if(!user){
-                const user = new User({
-                    name:'suresh',
-                    email:'suresh@gmail.com',
-                    cart:{items:[]}
-                });
-                user.save();
-            }
-        })
+        // User.findOne().then(user=>{
+        //     if(!user){
+        //         const user = new User({
+        //             name:'suresh',
+        //             email:'suresh@gmail.com',
+        //             cart:{items:[]}
+        //         });
+        //         user.save();
+        //     }
+        // })
         app.listen(3000);
         console.log('server started at port 3000');
     }
-).catch(err=>{
+)
+.catch(err=>{
     console.log('Error while connecting with the Db:',err);
 });
