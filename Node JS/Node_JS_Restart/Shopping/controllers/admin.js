@@ -6,9 +6,6 @@ exports.getAddProduct = (req,res,next)=>{
     // res.status(200).render('add-product',{title:'Add Product',path:'/admin/add-product'});
     
     // For handlebar
-    if(!req.session.isLoggedIn){
-        return res.redirect('/login');
-    }
     res.status(200).render('admin/edit-product',{
         title:'Add Product',
         path:'/admin/add-product',
