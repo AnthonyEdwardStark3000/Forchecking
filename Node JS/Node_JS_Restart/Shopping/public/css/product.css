@@ -90,15 +90,14 @@ button:active {
 }
 
 @media(min-width:768px){
-    .user-message{
-        margin: auto;
-        width: 30rem;
-        border: 1px solid rgb(125, 69, 247);
-        background-color: rgb(98, 98, 255);
+    .main-header__nav{
+        display: flex;
     }
-        .user-message--error {
-            border-color: red;
-            background: rgb(253, 99, 99);
-        }
 
+    #side-menu-toggle{
+        display: none;
+    }
+    .user-message{
+        width: 30rem;
+    }
 }
