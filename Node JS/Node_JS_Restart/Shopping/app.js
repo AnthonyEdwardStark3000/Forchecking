@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const csrf = require('csurf');
+const flash = require('connect-flash');
 const MongoDBStore = require('connect-mongodb-session')(session);
 // const expressHbs = require('express-handlebars');
 
@@ -23,6 +25,8 @@ const store = new MongoDBStore({
     uri:MONGODB_CONNECTION_URI,
     collection:'sessions',
 });
+
+const csrfProtection = csrf();
 
 // adding pug as view engine 
 
@@ -65,6 +69,9 @@ app.use(session({
     store:store
 }));
 
+app.use(csrfProtection);
+app.use(flash());
+
 // app.use((req,res,next)=>{
 //     // User.findByPk(1)
 //     // .then(
@@ -97,6 +104,13 @@ app.use((req,res,next)=>{
         console.log('while adding user:',err);
     })
 });
+
+app.use((req,res,next)=>{
+    res.locals.isAuthenticated =  req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
 
 app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);

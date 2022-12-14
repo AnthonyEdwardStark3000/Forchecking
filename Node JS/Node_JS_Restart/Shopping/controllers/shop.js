@@ -62,8 +62,7 @@ exports.getProducts = (req,res,next)=>{
         path:'/products',    
         hasProducts:products.length>0?true:false,
         productCss:true,
-        activeShop:true,
-        isAuthenticated: req.session.isLoggedIn
+        activeShop:true
     });
 })
     .catch(err=>{
@@ -113,8 +112,8 @@ exports.getProduct = (req,res,next)=>{
             product: product,
             title: product.title,
             imageUrl: product.imageUrl,
-            path:'/products',
-            isAuthenticated: req.session.isLoggedIn});
+            path:'/products'
+        });
     }).catch(err=>{
         console.log('at fetching:',err);
     })
@@ -238,7 +237,8 @@ exports.getIndex = (req,res,next)=>{
         prods: products,
         title:'Shopify',
         path:'/',
-        isAuthenticated: req.session.isLoggedIn
+        // isAuthenticated: req.session.isLoggedIn,
+        // csrfToken: req.csrfToken()
     }); 
     }).catch(err=>{
         console.log('while fetching all data from DB:',err);
@@ -276,21 +276,18 @@ exports.getCart = (req,res,next)=>{
     .then(user=>{
         console.log('get cart:',user);
         const products = user.cart.items;
-        res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products,
-    isAuthenticated: req.session.isLoggedIn});
+        res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
     })
 };
 
 exports.getAdminProducts = (req,res,next)=>{
-    res.render('admin/admin-product-list.ejs',{title:'Admin Products',path:'/admin/products',
-    isAuthenticated: req.session.isLoggedIn});
+    res.render('admin/admin-product-list.ejs',{title:'Admin Products',path:'/admin/products'});
 };
 
 exports.getCheckout = (req,res,next)=>{
-    res.render('shop/checkout.ejs',{title:'Checkout',path:'/checkout',
-    isAuthenticated: req.session.isLoggedIn});
+    res.render('shop/checkout.ejs',{title:'Checkout',path:'/checkout'});
 };
 
 exports.postOrder = (req,res,next)=>{
@@ -330,7 +327,7 @@ exports.postOrder = (req,res,next)=>{
         console.log('Products check:',products);
          const order = new Order({
         user:{
-            name:req.user.name,
+            email:req.user.email,
             userId: req.user
         },
         products: products
@@ -356,8 +353,7 @@ exports.getOrders = (req,res,next)=>{
     //mongodb mongoose
     Order.find({"user.userId":req.user._id})
     .then(orders=>{
-        res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders,
-    isAuthenticated: req.session.isLoggedIn});
+        res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders});
     }).catch(err=>{
         console.log('Error while getting order:',err);
     });    

@@ -6,6 +6,11 @@
   <body>
     <%-include('../includes/navigation.ejs')%>
     <main>
+      <%if(errorMessage){%>
+      <div class="user-message user-message--error">
+        <%=errorMessage%>
+      </div>
+      <%}%>
       <form class="login-form" action="/login" method="POST">
         <div class="form-control">
           <label for="title">E-Mail</label>
@@ -25,6 +30,7 @@
             id="password"
           />
         </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
         <button type="submit">Login</button>
       </form>
     </main>

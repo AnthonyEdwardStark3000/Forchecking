@@ -11,8 +11,7 @@ exports.getAddProduct = (req,res,next)=>{
         path:'/admin/add-product',
         productCss:true,
         activeAddProduct:true,
-        editing: false,
-    isAuthenticated: req.session.isLoggedIn
+        editing: false
     }
     );
 };
@@ -55,8 +54,7 @@ exports.postAddProduct = (req,res,next)=>{
         price:price,
         imageUrl:imageUrl,
         description:description,
-        userId: req.user,
-        isAuthenticated: req.session.isLoggedIn
+        userId: req.user
         });
         console.log('product:',product);
     product.save().then(result=>{
@@ -111,8 +109,7 @@ exports.getEditProduct = (req,res,next)=>{
             title:'Edit Product',
             path:'/admin/edit-product',
             editing:editMode,
-            product: product,
-            isAuthenticated: req.session.isLoggedIn
+            product: product
         }
         );
     }).catch(err=>{console.log('While getting edit product:',err)});
@@ -150,8 +147,7 @@ Product.find()
     res.render('admin/admin-product-list',{
     prods:products,
     title:'Admin products',
-    path:'/admin/products',
-    isAuthenticated: req.session.isLoggedIn
+    path:'/admin/products'
 });
 }).catch(err=>{console.log('while getting products for admin',err)});
 };

@@ -4,8 +4,10 @@ const bcrypt = require('bcryptjs');
 exports.getLogin = (req,res,next)=>{
     // const isLoggedIn = req.get('Cookie').split('=')[1].trim();
     console.log('session Details:',req.session.isLoggedIn);
-    res.render('auth/login',{path:'/login',title:"Login",
-    isAuthenticated: false
+    res.render('auth/login',{
+        path:'/login',
+        title:"Login",
+        errorMessage: req.flash('error'),
 });
 };
 
@@ -29,6 +31,7 @@ exports.postLogin = (req,res,next)=>{
     User.findOne({email:email})
     .then(user=>{
         if(!user){
+            req.flash('error','Invalid email or password.');
             return res.redirect('/login');
         }
         bcrypt.compare(password,user.password).then(doMatch=>{
@@ -61,8 +64,7 @@ exports.postLogout = (req,res,next)=>{
 exports.getSignup = (req,res,next)=>{
     res.render('auth/signup',{
         path:'signup',
-        title:'SignUp',
-        isAuthenticated:false
+        title:'SignUp'
     });
 };
 
