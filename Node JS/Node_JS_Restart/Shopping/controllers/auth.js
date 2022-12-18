@@ -1,5 +1,12 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+const transport = nodemailer.createTransport(sendgridTransport({
+    auth:{
+        api_key: '',
+    }
+}));
 
 exports.getLogin = (req,res,next)=>{
     // const isLoggedIn = req.get('Cookie').split('=')[1].trim();
@@ -69,9 +76,18 @@ exports.postLogout = (req,res,next)=>{
 };
 
 exports.getSignup = (req,res,next)=>{
+    console.log('session Details:',req.session.isLoggedIn);
+    let message = req.flash('error');
+    if(message.length>0){
+        message = message[0];
+    }
+    else{
+        message = null;
+    }
     res.render('auth/signup',{
         path:'signup',
-        title:'SignUp'
+        title:'SignUp',
+        errorMessage: message
     });
 };
 
@@ -80,8 +96,10 @@ exports.postSignup = (req,res,next)=>{
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    User.findOne({email:email}).then(userDoc=>{
+    User.findOne({email:email})
+    .then(userDoc=>{
         if(userDoc){
+            req.flash('error','The entered email already exists!');
             return res.redirect('/signup');
         }
         return bcrypt.hash(password,12).then(hashedPassword=>{
@@ -91,11 +109,40 @@ exports.postSignup = (req,res,next)=>{
             cart:{items:[]}
         });
         return user.save();
-    });
     })
     .then(result=>{
         res.redirect('/login');
-    }).catch(err=>{
+        console.log('email will be sent to:',email);
+        return transport.sendMail({
+            to:email,
+            from:'',
+            subject:'Sign-Up succeeded',
+            html:'<h1>Your account has been Successfully created</h1>'
+        }
+        );
+    }).then(result=>{
+        console.log('sent the mail',result);
+    }
+).catch(err=>{
+        console.log('error while sending mail /create account:',err);
+    }
+    );
+}).catch(err=>{
         console.log('error while signup user:',err);
     });
 };
+
+exports.getReset = (req,res,next)=>{
+    let message = req.flash('error');
+    if(message.length>0){
+        message = message[0];
+    }
+    else{
+        message = null;
+    }
+    res.render('auth/reset',{
+        path:'reset',
+        title:'Reset Password',
+        errorMessage: message
+    });
+}
