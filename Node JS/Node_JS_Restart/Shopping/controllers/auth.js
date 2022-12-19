@@ -1,12 +1,17 @@
+const crypto = require('crypto');
+
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
-const transport = nodemailer.createTransport(sendgridTransport({
-    auth:{
-        api_key: '',
-    }
-}));
+// const nodemailer = require('nodemailer');
+// const sendgridTransport = require('nodemailer-sendgrid-transport');
+// const transport = nodemailer.createTransport(sendgridTransport({
+//     auth:{
+//         api_key: '',
+//     }
+// }));
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey('');
+
 
 exports.getLogin = (req,res,next)=>{
     // const isLoggedIn = req.get('Cookie').split('=')[1].trim();
@@ -113,13 +118,13 @@ exports.postSignup = (req,res,next)=>{
     .then(result=>{
         res.redirect('/login');
         console.log('email will be sent to:',email);
-        return transport.sendMail({
+        const msg = {
             to:email,
             from:'',
             subject:'Sign-Up succeeded',
             html:'<h1>Your account has been Successfully created</h1>'
-        }
-        );
+        };
+        return sgMail.send(msg);
     }).then(result=>{
         console.log('sent the mail',result);
     }
@@ -145,4 +150,45 @@ exports.getReset = (req,res,next)=>{
         title:'Reset Password',
         errorMessage: message
     });
+}
+
+exports.postReset = (req,res,next)=>{
+    crypto.randomBytes(3,(err,buffer)=>{
+        if(err){
+            console.log(err);
+            return res.redirect('/reset');
+        }
+        const token = buffer.toString('hex');
+        User.findOne({email: req.body.email}).then(
+            user=>{
+                if(!user){
+                    req.flash('error','No account with the entered email found.');
+                    return res.redirect('/reset');
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now()+3600000;
+                return user.save();
+            }
+        ).then(result=>{
+            res.redirect('/');
+        //     transport.sendMail({
+        //     to: req.body.email,
+        //     from:'',
+        //     subject:'Password Reset',
+        //     html:`<h1> click the link to <a href="http://localhost:3000/reset/${token}">reset</a> the password,<br> link expires in 60 mins</h1>`
+        // }
+        // );
+        const msg = {
+            to:req.body.email,
+            from:'',
+            subject:'Reset Password',
+            html:`<h1> click the link to <a href="http://localhost:3000/reset/${token}">reset</a> the password,<br> link expires in 60 mins</h1>`
+        };
+        return sgMail.send(msg);
+        }).then(result=>{
+            console.log('reset password email:',result);
+        }).catch(err=>{
+            console.log('error while finding user (reset):',err);
+        })
+    })
 }
