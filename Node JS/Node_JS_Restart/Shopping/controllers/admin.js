@@ -182,14 +182,19 @@ exports.postEditProduct = (req,res,next)=>{
     // .then(result=>{
     //MongoDb mongoose   
     Product.findById(prodId).then(product=>{
+        if(product.userId.toString()!==req.user._id.toString()){
+            console.log('Wrong user to edit the data....');
+            return res.redirect('/');
+        }
         product.title = updatedTitle;
         product.imageUrl = updatedImageUrl;
         product.price = updatedPrice;
         product.description = updatedDescription;
-        return product.save()     
-    }).then(result=>{
+        return product.save()
+        .then(result=>{
         console.log('Updated products',result);
         res.redirect('/admin/products');
+    })     
     }).catch(err=>{
         console.log('Error while editing:',err);
     });
@@ -213,7 +218,7 @@ exports.postDeleteProduct = (req,res,next)=>{
     //Mongo Db
     // Product.deleteById(prodId)
     //Mongo Db mongoose
-    Product.findByIdAndRemove(prodId)
+    Product.deleteOne({_id:prodId,userId:req.user._id})
     .then(
         result=>{console.log('Delete controller success');
         res.redirect('/admin/products');
