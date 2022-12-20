@@ -2,16 +2,23 @@ const crypto = require('crypto');
 
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 // const transport = nodemailer.createTransport(sendgridTransport({
 //     auth:{
-//         api_key: '',
+//         api_key: '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',
 //     }
 // }));
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('');
-
+// const sgMail = require('@sendgrid/mail');
+// sgMail.setApiKey('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');
+const env = require('dotenv').config();
+const transport = nodemailer.createTransport({
+    service: process.env.SERVICE,
+    auth:{
+        user: process.env.USER_MAIL,
+        pass: process.env.USER_PASS,
+    }
+});
 
 exports.getLogin = (req,res,next)=>{
     // const isLoggedIn = req.get('Cookie').split('=')[1].trim();
@@ -120,11 +127,12 @@ exports.postSignup = (req,res,next)=>{
         console.log('email will be sent to:',email);
         const msg = {
             to:email,
-            from:'',
+            from: process.env.USER_MAIL,
             subject:'Sign-Up succeeded',
             html:'<h1>Your account has been Successfully created</h1>'
         };
-        return sgMail.send(msg);
+        // return sgMail.send(msg);
+        return transport.sendMail(msg);
     }).then(result=>{
         console.log('sent the mail',result);
     }
@@ -173,22 +181,73 @@ exports.postReset = (req,res,next)=>{
             res.redirect('/');
         //     transport.sendMail({
         //     to: req.body.email,
-        //     from:'',
+        //     from:'developmentapplication01@gmail.com',
         //     subject:'Password Reset',
         //     html:`<h1> click the link to <a href="http://localhost:3000/reset/${token}">reset</a> the password,<br> link expires in 60 mins</h1>`
         // }
         // );
         const msg = {
             to:req.body.email,
-            from:'',
+            from: process.env.USER_MAIL,
             subject:'Reset Password',
-            html:`<h1> click the link to <a href="http://localhost:3000/reset/${token}">reset</a> the password,<br> link expires in 60 mins</h1>`
+            html:`<h1> click the link to <a href="http://localhost:3000/reset/${token}">reset</a> 
+            the password,<br> link expires in 60 mins</h1>`
         };
-        return sgMail.send(msg);
+        // return sgMail.send(msg);
+        return transport.sendMail(msg);
         }).then(result=>{
             console.log('reset password email:',result);
         }).catch(err=>{
             console.log('error while finding user (reset):',err);
         })
     })
+}
+
+exports.getNewPassword = (req,res,next)=>{
+    const token = req.params.token;
+    User.findOne({resetToken:token,resetTokenExpiration:{$gt:Date.now()}})
+    .then(user=>{
+         let message = req.flash('error');
+    if(message.length>0){
+        message = message[0];
+    }
+    else{
+        message = null;
+    }
+    res.render('auth/new-password',{
+        path:'/new-password',
+        title:"Reset Password",
+        errorMessage: message,
+        userId: user._id.toString(),
+        passwordToken: token
+});
+    }).catch(err=>{
+        console.log('User find fail:',err);
+    });
+}
+
+exports.postNewPassword = (req,res,next)=>{
+    const password = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+    console.log('user to be changed:',userId);
+    User.findOne({resetToken:passwordToken,resetTokenExpiration:{$gt:Date.now()},_id:userId})
+    .then(user=>{
+        resetUser = user;
+        return bcrypt.hash(password,12);
+    })
+    .then(hashedPassword=>{
+        resetUser.password = hashedPassword;
+        resetUser.resetToken = undefined;
+        resetUser.resetTokenExpiration = undefined;
+        return resetUser.save();
+    })
+    .then(result=>{
+        console.log('password changed:',result);
+        res.redirect('/login');
+    })
+    .catch(err=>{
+        console.log('error for user find:',err);
+    });
 }

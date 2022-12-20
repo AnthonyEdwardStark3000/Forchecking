@@ -138,7 +138,7 @@ exports.getProducts = (req,res,next)=>{
         //mongoDb
 // Product.fetchAll()
 // mongoDb mongoose
-Product.find()
+Product.find({userId:req.user._id})
 // .select('title price -_id')
 // .populate('userId','name')
 
