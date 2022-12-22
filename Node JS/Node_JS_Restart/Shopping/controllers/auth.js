@@ -12,7 +12,7 @@ const nodemailer = require('nodemailer');
 // const sgMail = require('@sendgrid/mail');
 // sgMail.setApiKey('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');
 const env = require('dotenv').config();
-const {check, validationResult} = require('express-validator/check');
+const {check, validationResult} = require('express-validator');
 
 const transport = nodemailer.createTransport({
     service: process.env.SERVICE,
@@ -56,6 +56,15 @@ exports.postLogin = (req,res,next)=>{
     // .catch(err=>{console.log(err)});
     const email = req.body.email;
     const password = req.body.password;
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.render('auth/login',{
+        path:'/login',
+        title:"Login",
+        errorMessage: errors.array()[0].msg,
+        });
+    }
     User.findOne({email:email})
     .then(user=>{
         if(!user){
@@ -109,7 +118,7 @@ exports.postSignup = (req,res,next)=>{
     console.log('signing up user');
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
+    // const confirmPassword = req.body.confirmPassword;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         console.log(errors.array());
@@ -119,13 +128,14 @@ exports.postSignup = (req,res,next)=>{
             errorMessage: errors.array()[0].msg,
         })
     }
-    User.findOne({email:email})
-    .then(userDoc=>{
-        if(userDoc){
-            req.flash('error','The entered email already exists!');
-            return res.redirect('/signup');
-        }
-        return bcrypt.hash(password,12).then(hashedPassword=>{
+    // User.findOne({email:email})
+    // .then(userDoc=>{
+    //     if(userDoc){
+    //         req.flash('error','The entered email already exists!');
+    //         return res.redirect('/signup');
+    //     }
+        // return 
+        bcrypt.hash(password,12).then(hashedPassword=>{
             const user = new User({
             email:email,
             password: hashedPassword,
@@ -149,9 +159,9 @@ exports.postSignup = (req,res,next)=>{
     }
 ).catch(err=>{
         console.log('error while sending mail /create account:',err);
-    }
-    );
-}).catch(err=>{
+    // });
+})
+.catch(err=>{
         console.log('error while signup user:',err);
     });
 };
