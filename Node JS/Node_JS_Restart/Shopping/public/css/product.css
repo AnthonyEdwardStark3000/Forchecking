@@ -22,7 +22,7 @@ main {
 
 .form-control input,
 .form-control textarea {
-    border: 1px solid red;
+    /* border: 1px solid red; */
     font: inherit;
     border-radius: 2px;
 }
@@ -87,6 +87,10 @@ button:active {
 .user-message--error{
     border-color: red;
     background: rgb(253, 99, 99);
+}
+
+.form-control input.invalid{
+    border-color: red;
 }
 
 @media(min-width:768px){
