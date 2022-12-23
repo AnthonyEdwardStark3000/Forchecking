@@ -264,6 +264,10 @@ form {
     border: 1px solid #00695c;
     color: #00695c;
 }
+
+.invalid {
+    border-color: red;
+}
 @media (min-width: 768px) {
     .main-header__nav {
         height: 100%;

@@ -89,7 +89,8 @@ button:active {
     background: rgb(253, 99, 99);
 }
 
-.form-control input.invalid{
+.form-control input.invalid
+.form-control textarea.invalid{
     border-color: red;
 }
 

@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const {validationResult} = require("express-validator");
 
 exports.getAddProduct = (req,res,next)=>{
     // res.sendFile(path.join(rootDir,'views','add-product.html'));
@@ -11,7 +12,10 @@ exports.getAddProduct = (req,res,next)=>{
         path:'/admin/add-product',
         productCss:true,
         activeAddProduct:true,
-        editing: false
+        editing: false,
+        hasError: false,
+        errorMessage: null,
+        validationErrors:[]
     }
     );
 };
@@ -49,6 +53,28 @@ exports.postAddProduct = (req,res,next)=>{
     //     res.redirect('/admin/products');
     // })
     //using mongoose for mongodb
+    
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        console.log('Error I get now:',errors.array());
+        return res.status(422).render('admin/edit-product',{
+            title:'Add Product',
+            path:'/admin/edit-product',
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
+                imageUrl: imageUrl,
+                price: price,
+                description: description,
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        }
+        );
+    }
+
     const product = new Product({
         title:title,
         price:price,
@@ -99,6 +125,7 @@ exports.getEditProduct = (req,res,next)=>{
     //     );
     // }).catch(err=>{console.log('While getting edit product:',err)});
     //Mongo Db
+
     Product.findById(prodId)
     .then(product => {
         console.log('product found:',product);
@@ -109,7 +136,10 @@ exports.getEditProduct = (req,res,next)=>{
             title:'Edit Product',
             path:'/admin/edit-product',
             editing:editMode,
-            product: product
+            product: product,
+            hasError: false,
+            errorMessage: null,
+            validationErrors: []
         }
         );
     }).catch(err=>{console.log('While getting edit product:',err)});
@@ -181,6 +211,28 @@ exports.postEditProduct = (req,res,next)=>{
     // product.save()
     // .then(result=>{
     //MongoDb mongoose   
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        console.log('Error I get in edit product:',errors.array());
+        return res.status(422).render('admin/edit-product',{
+            title:'Edit Product',
+            path:'/admin/edit-product',
+            editing: true,
+            hasError: true,
+            product: {
+                title: updatedTitle,
+                imageUrl: updatedImageUrl,
+                price: updatedPrice,
+                description: updatedDescription,
+                _id: prodId,
+            },
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        }
+        );
+    }
+    console.log('validation errors found for edit:',errors.array());
+    
     Product.findById(prodId).then(product=>{
         if(product.userId.toString()!==req.user._id.toString()){
             console.log('Wrong user to edit the data....');
