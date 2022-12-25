@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const {validationResult} = require("express-validator");
+const mongoose = require('mongoose');
 
 exports.getAddProduct = (req,res,next)=>{
     // res.sendFile(path.join(rootDir,'views','add-product.html'));
@@ -60,7 +61,7 @@ exports.postAddProduct = (req,res,next)=>{
         console.log('Error I get now:',errors.array());
         return res.status(422).render('admin/edit-product',{
             title:'Add Product',
-            path:'/admin/edit-product',
+            path:'/admin/add-product',
             editing: false,
             hasError: true,
             product: {
@@ -83,12 +84,31 @@ exports.postAddProduct = (req,res,next)=>{
         userId: req.user
         });
         console.log('product:',product);
-    product.save().then(result=>{
+        product.save().then(result=>{
         console.log('creating a table:',result);
         res.redirect('/admin/products');
     })
     .catch((err)=>{
         console.log('error while creating:',err);
+        // return res.status(500).render('admin/edit-product',{
+        //     title:'Add Product',
+        //     path:'/admin/add-product',
+        //     editing: false,
+        //     hasError: true,
+        //     product: {
+        //         title: title,
+        //         imageUrl: imageUrl,
+        //         price: price,
+        //         description: description,
+        //     },
+        //     errorMessage: 'Database operation failed.',
+        //     validationErrors: []
+        // }
+        // );
+        // res.redirect('/500')
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -142,7 +162,11 @@ exports.getEditProduct = (req,res,next)=>{
             validationErrors: []
         }
         );
-    }).catch(err=>{console.log('While getting edit product:',err)});
+    }).catch(err=>{console.log('While getting edit product:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 };
 
 exports.getProducts = (req,res,next)=>{
@@ -179,7 +203,11 @@ Product.find({userId:req.user._id})
     title:'Admin products',
     path:'/admin/products'
 });
-}).catch(err=>{console.log('while getting products for admin',err)});
+}).catch(err=>{console.log('while getting products for admin',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
+});
 };
 
 exports.postEditProduct = (req,res,next)=>{
@@ -249,6 +277,9 @@ exports.postEditProduct = (req,res,next)=>{
     })     
     }).catch(err=>{
         console.log('Error while editing:',err);
+         const error = new Error('Data base edit fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 
 };
@@ -275,5 +306,10 @@ exports.postDeleteProduct = (req,res,next)=>{
         result=>{console.log('Delete controller success');
         res.redirect('/admin/products');
     })
-    .catch(err=>{console.log('deletion controller:',err)});
+    .catch(err=>{
+        console.log('deletion controller:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
+});
 }

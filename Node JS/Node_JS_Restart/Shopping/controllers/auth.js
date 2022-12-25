@@ -116,6 +116,9 @@ exports.postLogin = (req,res,next)=>{
     })
     .catch(err=>{
         console.log('error while checking user login:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -199,6 +202,9 @@ exports.postSignup = (req,res,next)=>{
 })
 .catch(err=>{
         console.log('error while signup user:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -256,6 +262,9 @@ exports.postReset = (req,res,next)=>{
             console.log('reset password email:',result);
         }).catch(err=>{
             console.log('error while finding user (reset):',err);
+            const error = new Error('Data base save fail');
+            error.httpStatusCode = 500;
+            return next(error);
         })
     })
 }
@@ -280,6 +289,9 @@ exports.getNewPassword = (req,res,next)=>{
 });
     }).catch(err=>{
         console.log('User find fail:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 }
 
@@ -306,5 +318,8 @@ exports.postNewPassword = (req,res,next)=>{
     })
     .catch(err=>{
         console.log('error for user find:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 }

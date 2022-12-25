@@ -5,6 +5,7 @@ const session = require('express-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const MongoDBStore = require('connect-mongodb-session')(session);
+
 // const expressHbs = require('express-handlebars');
 
 //Establish DB connection
@@ -98,10 +99,14 @@ app.use((req,res,next)=>{
     }
     User.findById(req.session.user._id)
     .then(user=>{
+        if(!user){
+            return next();
+        }
         req.user = user;
         next();
     }).catch(err=>{
         console.log('while adding user:',err);
+        next (new Error(err));
     })
 });
 
@@ -116,6 +121,11 @@ app.use('/admin',AdminRoutesData.route);
 app.use(UserRoutes);
 app.use(AuthRoutes);
 app.use(ErrorRoutes);
+
+//Error Handling middleware
+app.use((error,req,res,next)=>{
+    res.redirect('/500');
+});
 
 // Associations for Sequelize
 

@@ -67,6 +67,9 @@ exports.getProducts = (req,res,next)=>{
 })
     .catch(err=>{
         console.log('while fetching all data from DB:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -116,6 +119,9 @@ exports.getProduct = (req,res,next)=>{
         });
     }).catch(err=>{
         console.log('at fetching:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     })
 };
 
@@ -194,6 +200,9 @@ exports.postCartDeleteProduct = (req,res,err)=>{
         res.redirect('/cart');
     }).catch(err=>{
         console.log('Error deleting product from user cart :',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });    
 }
 
@@ -242,6 +251,9 @@ exports.getIndex = (req,res,next)=>{
     }); 
     }).catch(err=>{
         console.log('while fetching all data from DB:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -279,6 +291,9 @@ exports.getCart = (req,res,next)=>{
         res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     })
 };
 
@@ -344,6 +359,9 @@ exports.postOrder = (req,res,next)=>{
     )
     .catch(err=>{
         console.log('error while adding order:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     })
 };
 
@@ -356,5 +374,8 @@ exports.getOrders = (req,res,next)=>{
         res.render('shop/orders.ejs',{title:'Orders',path:'/orders',orders:orders});
     }).catch(err=>{
         console.log('Error while getting order:',err);
+        const error = new Error('Data base save fail');
+        error.httpStatusCode = 500;
+        return next(error);
     });    
 };
