@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 // const expressHbs = require('express-handlebars');
@@ -51,6 +52,15 @@ const ErrorRoutes = require('./routes/404');
 const AuthRoutes = require('./routes/auth');
 // const mongoConnect = require('./util/database').mongoConnect;
 
+//storage Object for multer
+const fileStorage = multer.diskStorage({
+    destination: (req,file,cb)=>{
+        cb(null,'images');
+    },
+    filename:(req,file,cb)=>{
+        cb(null,file.filename+'-'+file.originalname);
+    }
+});
 const User = require("./models/user");
 // db.execute('SELECT * FROM products').then(result=>{
 //     console.log(result[0]);
@@ -61,7 +71,8 @@ const User = require("./models/user");
 // Using External css
 app.use(express.static(path.join(__dirname,'public')));
 //
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(multer({dest:'images'}).single('image'));
 //session
 app.use(session({
     secret:'My secret to unlock',
