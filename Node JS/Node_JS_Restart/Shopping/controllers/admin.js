@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const {validationResult} = require("express-validator");
 const mongoose = require('mongoose');
+const fileHelper = require('../util/file');
 
 exports.getAddProduct = (req,res,next)=>{
     // res.sendFile(path.join(rootDir,'views','add-product.html'));
@@ -287,6 +288,7 @@ exports.postEditProduct = (req,res,next)=>{
         }
         product.title = updatedTitle;
         if(image){
+            fileHelper.deleteFile(imageUrl);
             product.imageUrl = image.path;
         }
         // product.imageUrl = updatedImageUrl;
@@ -323,7 +325,14 @@ exports.postDeleteProduct = (req,res,next)=>{
     //Mongo Db
     // Product.deleteById(prodId)
     //Mongo Db mongoose
-    Product.deleteOne({_id:prodId,userId:req.user._id})
+    Product.findById(prodId).then(
+            product=>{
+                if(!product){
+                    return next(new Error('Product not found for alteration!'));
+                }
+                    fileHelper.deleteFile(product.imageUrl);
+                    return Product.deleteOne({_id:prodId,userId:req.user._id});
+            })
     .then(
         result=>{console.log('Delete controller success');
         res.redirect('/admin/products');
