@@ -4,6 +4,7 @@ const Cart = require("../models/old_cart");
 const user = require("../models/user");
 const fs = require('fs');
 const path = require('path');
+const PDFDOCUMENT = require('pdfkit');
 
 exports.getProducts = (req,res,next)=>{
 // Product.fetchAll((products)=>{
@@ -392,7 +393,28 @@ exports.getInvoice = (req,res,next)=>{
          return next(new Error('ERR! Unauthorized user access for data !'));
         }
         const invoiceName = 'invoice-'+orderId+'.pdf';
-    const invoicePath = path.join('data','invoices',invoiceName);
+        const invoicePath = path.join('data','invoices',invoiceName);
+
+        const pdfDoc = new PDFDOCUMENT(); 
+        res.setHeader('Content-Type','application/pdf')
+        res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        pdfDoc.pipe(res);
+        pdfDoc.fontSize(26).text('INVOICE',{
+            underline:true,
+            align: 'center',
+        });
+        pdfDoc.text('----------------------------------------',{align:'center'});
+        let totalPrice = 0;
+        order.products.forEach(prod=>{
+
+            totalPrice += prod.quantity * prod.product.price;
+            pdfDoc.fontSize(12).text(prod.product.title+' : '+prod.quantity+' X '+prod.product.price +' = '+prod.product.price*prod.quantity + '.rs',{align: 'center'});
+        });
+        pdfDoc.text('----------------------------------------',{align:'center'});
+        pdfDoc.fontSize(18).text('Total Price :'+totalPrice +'.rs',{align:'center'});
+        pdfDoc.end();
+        // for checking invoice from local repo under the data/invoices folder
     // fs.readFile(invoicePath,(err,data)=>{
     //     if(err){
     //        console.log('error while downloading file:',err);
@@ -402,11 +424,13 @@ exports.getInvoice = (req,res,next)=>{
     //     res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
     //     res.send(data);
     // });
-    const file = fs.createReadStream(invoicePath);
-    res.setHeader('Content-Type','application/pdf')
-    res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
-    file.pipe(res);
-    }).catch(err=>{
-        next(err);
-    });
+   
+    // const file = fs.createReadStream(invoicePath);
+    // res.setHeader('Content-Type','application/pdf')
+    // res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
+    // file.pipe(res);
+    })
+    // .catch(err=>{
+    //     next(err);
+    // });
 }
