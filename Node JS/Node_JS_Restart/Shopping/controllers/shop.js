@@ -2,6 +2,8 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const Cart = require("../models/old_cart");
 const user = require("../models/user");
+const fs = require('fs');
+const path = require('path');
 
 exports.getProducts = (req,res,next)=>{
 // Product.fetchAll((products)=>{
@@ -379,3 +381,32 @@ exports.getOrders = (req,res,next)=>{
         return next(error);
     });    
 };
+
+exports.getInvoice = (req,res,next)=>{
+    const orderId = req.params.orderId;
+    Order.findById(orderId).then(order=>{
+        if(!order){
+        return next(new Error('No order Found for the current product Details !'));
+        }
+        if(order.user.userId.toString()!== req.user._id.toString()){
+         return next(new Error('ERR! Unauthorized user access for data !'));
+        }
+        const invoiceName = 'invoice-'+orderId+'.pdf';
+    const invoicePath = path.join('data','invoices',invoiceName);
+    // fs.readFile(invoicePath,(err,data)=>{
+    //     if(err){
+    //        console.log('error while downloading file:',err);
+    //        return next(err);
+    //     }
+    //     res.setHeader('Content-Type','application/pdf');
+    //     res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
+    //     res.send(data);
+    // });
+    const file = fs.createReadStream(invoicePath);
+    res.setHeader('Content-Type','application/pdf')
+    res.setHeader('Content-Disposition','attachment;filename="'+invoiceName+'"');
+    file.pipe(res);
+    }).catch(err=>{
+        next(err);
+    });
+}
