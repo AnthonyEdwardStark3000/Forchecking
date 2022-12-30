@@ -24,8 +24,8 @@ exports.getAddProduct = (req,res,next)=>{
 exports.postAddProduct = (req,res,next)=>{
     const title = req.body.title;
     // const imageUrl = req.body.imageUrl;
-    const imageUrl = req.file;
-    console.log('check the imageUrl',imageUrl);
+    const image = req.file;
+    console.log('check the imageUrl',image);
     const price = req.body.price;
     const description = req.body.description;
     // const product = new Product(null,title,imageUrl,price,description);
@@ -55,7 +55,24 @@ exports.postAddProduct = (req,res,next)=>{
     //     res.redirect('/admin/products');
     // })
     //using mongoose for mongodb
-    
+    if(!image){
+        return res.status(422).render('admin/edit-product',{
+            title:'Add Product',
+            path:'/admin/add-product',
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
+                // imageUrl: imageUrl,
+                price: price,
+                description: description,
+            },
+            errorMessage: `The file attached is not an valid image !
+            Please choose an image with png / jpg / jpeg format`,
+            validationErrors: []
+        }
+        );
+    }
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
@@ -67,7 +84,7 @@ exports.postAddProduct = (req,res,next)=>{
             hasError: true,
             product: {
                 title: title,
-                imageUrl: imageUrl,
+                // imageUrl: imageUrl,
                 price: price,
                 description: description,
             },
@@ -76,7 +93,7 @@ exports.postAddProduct = (req,res,next)=>{
         }
         );
     }
-
+    const imageUrl = image.path;
     const product = new Product({
         title:title,
         price:price,
@@ -215,7 +232,8 @@ exports.postEditProduct = (req,res,next)=>{
     console.log('checking all the product:',req.body);
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
-    const updatedImageUrl = req.body.imageUrl;
+    // const updatedImageUrl = req.body.imageUrl;
+    const image = req.file;
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.description;
     // const updatedProduct = new Product(prodId,updatedTitle,updatedImageUrl,updatedPrice,updatedDescription);
@@ -250,7 +268,7 @@ exports.postEditProduct = (req,res,next)=>{
             hasError: true,
             product: {
                 title: updatedTitle,
-                imageUrl: updatedImageUrl,
+                // imageUrl: updatedImageUrl,
                 price: updatedPrice,
                 description: updatedDescription,
                 _id: prodId,
@@ -268,7 +286,10 @@ exports.postEditProduct = (req,res,next)=>{
             return res.redirect('/');
         }
         product.title = updatedTitle;
-        product.imageUrl = updatedImageUrl;
+        if(image){
+            product.imageUrl = image.path;
+        }
+        // product.imageUrl = updatedImageUrl;
         product.price = updatedPrice;
         product.description = updatedDescription;
         return product.save()

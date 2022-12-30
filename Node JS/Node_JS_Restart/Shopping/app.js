@@ -30,6 +30,33 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+//storage Object for multer
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    console.log('Image extension:',ext);
+    console.log('Doubt checking:',file);
+    cb(null,`${file.originalname}-${Date.now()}.${ext}`);
+}
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/jpeg'
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+
 // adding pug as view engine 
 
 // app.set('view engine','pug');
@@ -52,15 +79,7 @@ const ErrorRoutes = require('./routes/404');
 const AuthRoutes = require('./routes/auth');
 // const mongoConnect = require('./util/database').mongoConnect;
 
-//storage Object for multer
-const fileStorage = multer.diskStorage({
-    destination: (req,file,cb)=>{
-        cb(null,'images');
-    },
-    filename:(req,file,cb)=>{
-        cb(null,file.filename+'-'+file.originalname);
-    }
-});
+
 const User = require("./models/user");
 // db.execute('SELECT * FROM products').then(result=>{
 //     console.log(result[0]);
@@ -70,9 +89,10 @@ const User = require("./models/user");
 
 // Using External css
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/images',express.static(path.join(__dirname,'images')));
 //
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(multer({dest:'images'}).single('image'));
+app.use(multer({storage:fileStorage, fileFilter: fileFilter}).single('image'));
 //session
 app.use(session({
     secret:'My secret to unlock',
