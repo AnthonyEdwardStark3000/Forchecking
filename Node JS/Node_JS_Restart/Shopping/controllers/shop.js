@@ -5,6 +5,7 @@ const user = require("../models/user");
 const fs = require('fs');
 const path = require('path');
 const PDFDOCUMENT = require('pdfkit');
+const ITEMS_PER_PAGE =2;
 
 exports.getProducts = (req,res,next)=>{
 // Product.fetchAll((products)=>{
@@ -241,7 +242,10 @@ exports.getIndex = (req,res,next)=>{
     //Mongo
     // Product.fetchAll()
     // Mongodb mongoose
+    const page = req.query.page;
     Product.find()
+    .skip((page-1)*ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
     .then(
         products=>{
             console.log('fetch all:',products);
