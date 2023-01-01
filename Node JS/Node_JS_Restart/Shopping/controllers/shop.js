@@ -56,19 +56,47 @@ exports.getProducts = (req,res,next)=>{
     // });
     // Product.fetchAll()
     // mongodb mongoose
-    Product.find()
+//     Product.find()
+//     .then(
+//         products=>{
+//             console.log('Products received:',products);
+//         res.render('shop/product-list',{
+//         prods: products,
+//         title:'All Products',
+//         path:'/products',    
+//         hasProducts:products.length>0?true:false,
+//         productCss:true,
+//         activeShop:true
+//     });
+// })
+//implementing pagination logic
+const page = +req.query.page || 1;
+    let totalItems;
+    //for creating dynamic pagination
+    Product.find().countDocuments().then(numProducts=>{
+        console.log('found the products for get products page :');
+        totalItems = numProducts;
+        return Product.find()
+        .skip((page-1)*ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then(
         products=>{
-            console.log('Products received:',products);
+        console.log('fetch all get products:',products);
         res.render('shop/product-list',{
         prods: products,
         title:'All Products',
-        path:'/products',    
-        hasProducts:products.length>0?true:false,
-        productCss:true,
-        activeShop:true
-    });
-})
+        path:'/products',
+        // isAuthenticated: req.session.isLoggedIn,
+        // csrfToken: req.csrfToken()
+        currentPage: page,
+        hasNextPage : ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page>1,
+        nextPage: page+1,
+        previousPage: page-1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+    }); 
+    })
     .catch(err=>{
         console.log('while fetching all data from DB:',err);
         const error = new Error('Data base save fail');
