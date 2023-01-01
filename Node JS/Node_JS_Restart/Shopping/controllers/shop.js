@@ -242,19 +242,31 @@ exports.getIndex = (req,res,next)=>{
     //Mongo
     // Product.fetchAll()
     // Mongodb mongoose
-    const page = req.query.page;
-    Product.find()
-    .skip((page-1)*ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
+    const page = +req.query.page || 1;
+    let totalItems;
+    //for creating dynamic pagination
+    Product.find().countDocuments().then(numProducts=>{
+        console.log('found the products for this page :');
+        totalItems = numProducts;
+        return Product.find()
+        .skip((page-1)*ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then(
         products=>{
-            console.log('fetch all:',products);
-         res.render('shop/index',{
+        console.log('fetch all:',products);
+        res.render('shop/index',{
         prods: products,
         title:'Shopify',
         path:'/',
         // isAuthenticated: req.session.isLoggedIn,
         // csrfToken: req.csrfToken()
+        currentPage: page,
+        hasNextPage : ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page>1,
+        nextPage: page+1,
+        previousPage: page-1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
     }); 
     }).catch(err=>{
         console.log('while fetching all data from DB:',err);
