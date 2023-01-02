@@ -154,8 +154,14 @@ app.use(AuthRoutes);
 app.use(ErrorRoutes);
 
 //Error Handling middleware
-app.use((error,req,res,next)=>{
-    res.redirect('/500');
+app.use((error, req, res, next) => {
+  // res.status(error.httpStatusCode).render(...);
+  // res.redirect('/500');
+  res.status(500).render('500', {
+    title: 'Error!',
+    path: '/500',
+    isAuthenticated: req.session.isLoggedIn
+  });
 });
 
 // Associations for Sequelize

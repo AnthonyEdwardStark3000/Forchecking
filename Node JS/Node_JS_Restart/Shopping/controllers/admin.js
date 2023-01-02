@@ -344,3 +344,24 @@ exports.postDeleteProduct = (req,res,next)=>{
         return next(error);
 });
 }
+
+exports.deleteProduct =(req,res,next)=>{
+    const prodId = req.params.productId;
+    console.log('Product ID from delete-Product:',prodId);
+    Product.findById(prodId).then(
+            product=>{
+                if(!product){
+                    return next(new Error('Product not found for alteration!'));
+                }
+                    fileHelper.deleteFile(product.imageUrl);
+                    return Product.deleteOne({_id:prodId,userId:req.user._id});
+            })
+    .then(
+        result=>{console.log('Delete controller success:',result);
+        res.status(200).json({message: 'Success !'});
+    })
+    .catch(err=>{
+        console.log('deletion controller issue:',err);
+        res.status(500).json({message: 'Product Deletion failed !'});
+});
+}
