@@ -337,6 +337,7 @@ exports.getCart = (req,res,next)=>{
     .then(user=>{
         console.log('get cart:',user);
         const products = user.cart.items;
+        console.log('checking the products in cart:',products);
         res.render('shop/cart.ejs',{title:'Your Cart',path:'/cart',products:products});
     }).catch(err=>{
         console.log('Error while getting cart:',err);
