@@ -19,6 +19,12 @@ exports.createPosts = (req,res,next)=>{
        error.statusCode = 422;
        throw error;
     }
+    if(!req.file){
+        const error = new Error('No image file is provided !');
+        error.statusCode = 422;
+        throw error;
+    }
+    const imageUrl = req.file.path;
     const title = req.body.title;
     const content = req.body.content;
     console.log(errors);
@@ -28,7 +34,7 @@ exports.createPosts = (req,res,next)=>{
             creator:{
                 name:'Suresh',
             },
-            imageUrl:'../images/82574-W0iw3w9eN-transformed.jpeg'
+            imageUrl: imageUrl
     });
     post.save().then(result=>{
         console.log(result);
