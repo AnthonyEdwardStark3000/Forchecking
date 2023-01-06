@@ -4,6 +4,7 @@ const path = require('path');
 const Post = require('../models/post');
 
 exports.getPosts = (req,res,next)=>{
+    const currentPage = req.query.page||1;
     Post.find().then(posts=>{
         res.json({message:'Found the Posts',posts:posts});
     }).catch(err=>{
