@@ -24,12 +24,13 @@ const fileFilter = (req,file,cb)=>{
         file.mimetype == 'image/jpg'||
         file.mimetype == 'image/jpeg'){
             cb(null,true);
+            console.log('Image check success');
         }
         else{
             cb(null,false);
+            console.log('Image check fail');
         }
 }
-
 //setting up CORS
 app.use((req,res,next)=>{
     res.setHeader('Access-Control-Allow-Origin','*');

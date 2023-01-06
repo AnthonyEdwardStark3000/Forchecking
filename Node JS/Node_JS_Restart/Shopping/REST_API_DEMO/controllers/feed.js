@@ -12,7 +12,7 @@ exports.getPosts = (req,res,next)=>{
     });
 }
 
-exports.createPosts = (req,res,next)=>{
+exports.createPost = (req,res,next)=>{
     const errors = validationResult(req);
     if(!errors.isEmpty()){
        const error = new Error('Entered incorrect value, so validation failed !');
@@ -24,7 +24,8 @@ exports.createPosts = (req,res,next)=>{
         error.statusCode = 422;
         throw error;
     }
-    const imageUrl = req.file.path;
+    const imageUrl = req.file.path.replace("\\" ,"/");
+    console.log('after creation ImageUrl:',imageUrl);
     const title = req.body.title;
     const content = req.body.content;
     console.log(errors);
