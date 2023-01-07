@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 const path = require('path');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
@@ -46,11 +47,13 @@ app.use(bodyParser.json()); // application/json
 app.use(multer({storage:storage,fileFilter:fileFilter}).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/feed',feedRoutes);
+app.use('/auth',authRoutes);
 app.use((error,req,res,next)=>{
     console.log(error);
     const status = error.statusCode || 500;
     const message = error.message;
-    res.status(status).json({message:message});
+    const data = error.data;
+    res.status(status).json({message:message,data:data});
 });
 const connectionUrl = process.env.MONGODB_CONNECTION_URI;
 mongoose.connect(connectionUrl)
