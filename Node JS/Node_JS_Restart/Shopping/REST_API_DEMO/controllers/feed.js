@@ -2,6 +2,7 @@ const {validationResult} = require('express-validator');
 const fs = require('fs');
 const path = require('path');
 const Post = require('../models/post');
+const User = require('../models/user');
 
 exports.getPosts = (req,res,next)=>{
     const currentPage = req.query.page||1;
@@ -39,22 +40,34 @@ exports.createPost = (req,res,next)=>{
     console.log('after creation ImageUrl:',imageUrl);
     const title = req.body.title;
     const content = req.body.content;
+    let creator;
+
     console.log(errors);
     const post = new Post({
             title: title,
             content: content,
-            creator:{
-                name:'Suresh',
-            },
+            creator: req.userId,
             imageUrl: imageUrl
     });
     post.save().then(result=>{
         console.log(result);
+        return User.findById(req.userId);
+    }).then(user=>{
+        creator = user;
+        user.posts.push(post);
+        return user.save();
+     })
+     .then(result=>{
         res.status(201).json({
         message: 'POST created Successfully',
-        post:result
-    })
-    }).catch(err=>{
+        post: post,
+        creator:{
+            _id:creator._id,
+            name:creator.name
+        }
+    });
+     })
+     .catch(err=>{
         if(!err.statusCode){
             err.statusCode = 500;
         }
@@ -106,6 +119,11 @@ exports.updatePost = (req,res,next)=>{
             error.statusCode = 404;
             throw error; 
             }
+            if(post.creator.toString() !== req.userId){
+                const error = new Error('User Authorization Failed!');
+                error.statusCode = 403;
+                throw error;
+            }
             if(imageUrl !== post.imageUrl){
                 clearImage(post.imageUrl);
             }
@@ -138,12 +156,24 @@ exports.deletePost = (req,res,next)=>{
             throw error; 
             }
             //check logged In user details
+            if(post.creator.toString() !== req.userId){
+                const error = new Error('User Authorization Failed!');
+                error.statusCode = 403;
+                throw error;
+            }
             clearImage(post.imageUrl);
             return Post.findByIdAndRemove(postId);
         }
     ).then(result=>{
+        return User.findById(req.userId);   
+    })
+    .then(user=>{
+        user.posts.pull(postId);
+        return user.save();
+    })
+    .then(result=>{
         console.log('post deletion success!'); 
-        res.status(200).json({message:'Post deleted Successfully',result:result});   
+        res.status(200).json({message:'Post deleted Successfully',result:result});
     })
     .catch(err=>{
         console.log('error while deleting the post:',err);
