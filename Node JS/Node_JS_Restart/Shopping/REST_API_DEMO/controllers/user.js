@@ -105,7 +105,7 @@ exports.updateUserStatus = (req,res,next)=>{
             return user.save();
         })
         .then(result=>{
-            res.status(200).json({message:'Status Updated Succesfully'})
+            res.status(200).json({message:'User Updated Successfully'})
         })
         .catch(err=>{
         console.log('while updating the status:',err);
