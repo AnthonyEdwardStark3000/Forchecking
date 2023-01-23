@@ -62,7 +62,6 @@ app.use((req, res, next) => {
 const connectionUrl = process.env.MONGODB_CONNECTION_URI;
 mongoose.connect(connectionUrl)
     .then(result => {
-        console.log('connected!');
         // app.listen(8080,function(){
         //     console.log(`Server started at port 8080`);
         // });
@@ -70,7 +69,7 @@ mongoose.connect(connectionUrl)
         console.log('server started at port 8080');
         const io = require('socket.io')(server);
         io.on('connection', socket => {
-            console.log('Client got connected');
+            console.log('From socket:Client got connected');
         });
     }).catch(err => {
         console.log('Error while establishing the connection:', err);
