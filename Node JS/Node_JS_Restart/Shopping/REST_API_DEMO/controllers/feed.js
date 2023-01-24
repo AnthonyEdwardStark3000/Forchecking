@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const Post = require('../models/post');
 const User = require('../models/user');
+const io = require('../socket');
 
 exports.getPosts = (req,res,next)=>{
     const currentPage = req.query.page||1;
@@ -11,7 +12,7 @@ exports.getPosts = (req,res,next)=>{
     Post.find().countDocuments().then(
         count=>{
             totalItems = count;
-            return Post.find().skip((currentPage-1)*perPage).limit(perPage)
+            return Post.find().populate('creator').skip((currentPage-1)*perPage).limit(perPage)
             }
     ).then(posts=>{
             res.json({message:'Found the Posts',posts:posts,totalItems: totalItems});
@@ -55,7 +56,9 @@ exports.createPost = (req,res,next)=>{
     }).then(user=>{
         creator = user;
         user.posts.push(post);
-        return user.save();
+        return user.save().then(
+            io.getIo().emit('posts',{action:'create',post:{...post._doc,creator:{_id:req.userId,name:user.name}}})
+        );
      })
      .then(result=>{
         res.status(201).json({
