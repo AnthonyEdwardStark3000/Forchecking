@@ -135,8 +135,9 @@ exports.updatePost = (req,res,next)=>{
             post.content = content;
             return post.save();
         }
-    )
+    ).populate('creator')
     .then(result=>{
+        io.getIo().emit('posts',{action:'update',post:result})
         console.log('after updating the product:',result);
         res.status(200).json({message: 'Post got Updated!',post: result});
     })
