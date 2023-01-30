@@ -12,7 +12,7 @@ exports.getPosts = (req,res,next)=>{
     Post.find().countDocuments().then(
         count=>{
             totalItems = count;
-            return Post.find().populate('creator').skip((currentPage-1)*perPage).limit(perPage)
+            return Post.find().populate('creator').sort({createdAt:-1}).skip((currentPage-1)*perPage).limit(perPage)
             }
     ).then(posts=>{
             res.json({message:'Found the Posts',posts:posts,totalItems: totalItems});
@@ -115,14 +115,14 @@ exports.updatePost = (req,res,next)=>{
         error.statusCode =422;
         throw error;
     }
-    Post.findById(postId).then(
+    Post.findById(postId).populate('creator').then(
         post =>{
             if(!post){
             const error = new Error('The required Post/ Feed is not found !');
             error.statusCode = 404;
             throw error; 
             }
-            if(post.creator.toString() !== req.userId){
+            if(post.creator._id.toString() !== req.userId){
                 const error = new Error('User Authorization Failed!');
                 error.statusCode = 403;
                 throw error;
@@ -135,7 +135,7 @@ exports.updatePost = (req,res,next)=>{
             post.content = content;
             return post.save();
         }
-    ).populate('creator')
+    )
     .then(result=>{
         io.getIo().emit('posts',{action:'update',post:result})
         console.log('after updating the product:',result);
@@ -177,6 +177,7 @@ exports.deletePost = (req,res,next)=>{
     })
     .then(result=>{
         console.log('post deletion success!'); 
+        io.getIo().emit('posts',{action:'delete',post:postId});
         res.status(200).json({message:'Post deleted Successfully',result:result});
     })
     .catch(err=>{
