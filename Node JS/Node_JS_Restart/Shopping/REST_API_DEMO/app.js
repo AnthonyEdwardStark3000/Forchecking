@@ -2,12 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
+// const feedRoutes = require('./routes/feed');
+// const authRoutes = require('./routes/auth');
 const path = require('path');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const app = express();
+
+//graphql
+const {graphqlHttp} = require('express-graphql');
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolver = require('./graphql/resolvers');
 
 // setting up storage to save file upload image
 const storage = multer.diskStorage({
@@ -48,6 +53,12 @@ app.use(multer({ storage: storage, fileFilter: fileFilter }).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
+
+app.use('/graphql',graphqlHttp({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver
+}));
+
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode || 500;
@@ -62,15 +73,15 @@ app.use((req, res, next) => {
 const connectionUrl = process.env.MONGODB_CONNECTION_URI;
 mongoose.connect(connectionUrl)
     .then(result => {
-        // app.listen(8080,function(){
-        //     console.log(`Server started at port 8080`);
-        // });
-        const server = app.listen(8080);
-        console.log('server started at port 8080');
-        const io = require('./socket').init(server);
-        io.on('connection', socket => {
-            console.log('From socket:Client got connected');
+        app.listen(8080,function(){
+            console.log(`Server started at port 8080`);
         });
+        // const server = app.listen(8080);
+        // console.log('server started at port 8080');
+        // const io = require('./socket').init(server);
+        // io.on('connection', socket => {
+        //     console.log('From socket:Client got connected');
+        // });
     }).catch(err => {
         console.log('Error while establishing the connection:', err);
     });
