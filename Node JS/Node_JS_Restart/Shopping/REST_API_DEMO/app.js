@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 
 //graphql
-const {graphqlHttp} = require('express-graphql');
+const { graphqlHTTP } = require('express-graphql');
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
 
@@ -51,10 +51,10 @@ app.use(bodyParser.json()); // application/json
 //configure multer to use file/image upload
 app.use(multer({ storage: storage, fileFilter: fileFilter }).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use('/feed', feedRoutes);
-app.use('/auth', authRoutes);
+// app.use('/feed', feedRoutes);
+// app.use('/auth', authRoutes);
 
-app.use('/graphql',graphqlHttp({
+app.use('/graphql',graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver
 }));
